@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urdu Learning Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-family: 'Noto Nastaliq Urdu', serif;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            min-height: 600px;
+        }
+
+        .story-panel {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-right: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        .story-selector {
+            margin-bottom: 20px;
+        }
+
+        .story-selector select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .text-reading-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f9fafb;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .urdu-text {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            font-size: 18px;
+            line-height: 2.2;
+            text-align: right;
+            direction: rtl;
+            background: transparent;
+            padding: 0;
+            border: none;
+            min-height: 300px;
+            height: 100%;
+        }
+
+        .urdu-word {
+            padding: 2px 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .urdu-word:hover {
+            background: #fef3c7;
+        }
+
+        .urdu-word.active {
+            background: #d1fae5;
+            box-shadow: 0 0 0 2px #10b981;
+        }
+
+        .urdu-word.selected {
+            background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 100%);
+            text-decoration: underline;
+            text-decoration-color: #3b82f6;
+            text-decoration-thickness: 2px;
+        }
+
+        .sidebar {
+            background: #f9fafb;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .translation-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            min-height: 150px;
+        }
+
+        .translation-box h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+
+        .word-display {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .translation-text {
+            font-size: 18px;
+            color: #374151;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .vocabulary-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .vocabulary-box h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+
+        .vocab-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .vocab-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .vocab-word {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            font-size: 20px;
+            color: #1f2937;
+        }
+
+        .vocab-translation {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .vocab-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .jump-button {
+            padding: 4px 8px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .jump-button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .urdu-word.saved {
+            border-bottom: 2px solid #d1d5db;
+            border-bottom-style: dotted;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 180px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1000;
+            top: -45px;
+            left: 50%;
+            margin-left: -90px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @keyframes flash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background: #fbbf24; }
+            100% { transform: scale(1); }
+        }
+
+        .empty-vocab {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        /* Mobile Translation Bar */
+        .mobile-translation-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            display: none;
+            max-height: 40vh; /* Prevent taking up too much screen */
+            overflow-y: auto; /* Allow scrolling if needed */
+        }
+
+        .mobile-translation-bar.show {
+            transform: translateY(0);
+        }
+
+        .mobile-translation-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 100%;
+        }
+
+        .mobile-text-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            min-height: 44px; /* Ensure touch-friendly height */
+        }
+
+        .mobile-word {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            flex-shrink: 0;
+            max-width: 40%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .mobile-translation {
+            font-size: 16px;
+            color: #4b5563;
+            flex-grow: 1;
+            text-align: left;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 60%;
+        }
+
+        .mobile-save {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px; /* Touch-friendly height */
+            font-weight: 600;
+        }
+
+        .mobile-save:hover {
+            background: #059669;
+        }
+
+
+        .mobile-vocab-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .mobile-vocab-modal.show {
+            display: flex;
+        }
+
+        .mobile-vocab-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 70vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-vocab-header {
+            padding: 20px 20px 0 20px;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vocab-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vocab-tabs {
+            display: flex;
+            border-bottom: 2px solid #f3f4f6;
+            margin: 0 20px;
+        }
+
+        .filter-status-bar {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 15px 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .filter-status-text {
+            color: #1e40af;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clear-filters-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-filters-btn:hover {
+            background: #b91c1c;
+        }
+
+        .vocab-tab {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .vocab-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .vocab-tab:hover {
+            color: #374151;
+        }
+
+        .vocab-tab-content {
+            display: none;
+        }
+
+        .vocab-tab-content.active {
+            display: block;
+        }
+
+        .vocab-filter-toggle {
+            background: #f3f4f6;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .vocab-filter-toggle.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .difficulty-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-right: 10px;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .difficulty-dot-large {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .difficulty-dot:hover {
+            transform: scale(1.2);
+            border-color: #374151;
+        }
+
+        .difficulty-easy {
+            background: #10b981;
+        }
+
+        .difficulty-medium {
+            background: #f59e0b;
+        }
+
+        .difficulty-hard {
+            background: #ef4444;
+        }
+
+        .filter-section {
+            padding: 20px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .filter-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .filter-btn.active:hover {
+            background: #2563eb;
+        }
+
+        .vocab-item-left {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .vocab-item-text {
+            flex-grow: 1;
+        }
+
+        .vocab-bin-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vocab-bin-btn:hover {
+            background: #dc2626;
+        }
+
+        .mobile-vocab-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .mobile-vocab-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-vocab-list {
+            padding: 15px 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .mobile-vocab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .mobile-vocab-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-vocab-word {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .mobile-vocab-translation {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .mobile-vocab-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mobile-vocab-clear {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 0 12px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .mobile-translation-bar {
+                display: none !important;
+            }
+        }
+
+        /* Top Vocabulary Button */
+        .vocab-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .vocab-btn:hover {
+            background: #4f46e5;
+        }
+
+        .vocab-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+        }
+
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none;
+            }
+            .mobile-translation-bar {
+                display: block;
+            }
+            .story-panel {
+                height: calc(100vh - 140px);
+                margin-right: 0;
+                margin-bottom: 100px;
+            }
+            .top-controls-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 15px;
+            }
+            .controls-left {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .controls-right {
+                width: 100%;
+                justify-content: center;
+            }
+            .urdu-text {
+                font-size: 16px;
+                line-height: 2.0;
+            }
+        }
+
+
+        .clear-button {
+            padding: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .top-controls-bar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 2px solid #e5e7eb;
+            border-radius: 12px 12px 0 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            min-height: 60px;
+        }
+
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-button {
+            padding: 8px 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .page-button:hover {
+            background: #2563eb;
+        }
+
+        .page-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: #6b7280;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .translation-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .toggle-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .toggle-button.translating {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .story-panel {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 20px;
+            }
+            
+            .story-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .page-navigation {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .translation-toggle {
+                justify-content: center;
+            }
+            
+            .toggle-button {
+                padding: 12px 20px;
+                font-size: 16px;
+                white-space: nowrap;
+                min-width: 160px;
+            }
+            
+            .page-button {
+                padding: 10px 16px;
+                font-size: 16px;
+                min-width: 80px;
+            }
+            
+            .page-info {
+                min-width: 100px;
+                font-size: 16px;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .urdu-text {
+                font-size: 16px;
+                line-height: 2.0;
+                padding: 15px;
+            }
+            
+            .sidebar {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>اردو Learning Studio</h1>
+            <p>Click words for instant translation</p>
+        </header>
+
+        <div class="main-content">
+            <div class="story-panel">
+                <div class="top-controls-bar">
+                    <div class="controls-left">
+                        <select id="storySelect" onchange="loadStory(this.value)">
+                            <option value="0">1. The Little Bird • چھوٹا پرندہ</option>
+                            <option value="1">2. The Garden • باغ</option>
+                            <option value="2">3. The Friend • دوست</option>
+                            <option value="3">4. The Cat • بلی</option>
+                        </select>
+                        
+                        <div class="page-navigation">
+                            <button class="page-button" id="prevPageBtn" onclick="previousPage()" disabled>← Previous</button>
+                            <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                            <button class="page-button" id="nextPageBtn" onclick="nextPage()" disabled>Next →</button>
+                        </div>
+                    </div>
+                    
+                    <div class="controls-right">
+                        <button class="toggle-button" id="translateToggle" onclick="togglePageTranslation()">
+                            Translate to English
+                        </button>
+                        
+                        <button class="vocab-btn" onclick="showMobileVocab()">
+                            📚 <span id="topVocabBadge" class="vocab-badge">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-reading-area">
+                    <div class="urdu-text" id="urduText">
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="translation-box">
+                    <h3>Translation</h3>
+                    <div id="translationContent">
+                        Click any Urdu word to see its translation
+                    </div>
+                </div>
+
+                <div class="vocabulary-box">
+                    <h3>Saved Vocabulary</h3>
+                    <div class="vocab-list" id="vocabList">
+                        <div class="empty-vocab">No saved words yet</div>
+                    </div>
+                    <button class="clear-button" onclick="clearVocabulary()" style="display: none;" id="clearButton">
+                        Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Translation Bar -->
+    <div id="mobileTranslationBar" class="mobile-translation-bar">
+        <div class="mobile-translation-content">
+            <div class="mobile-text-row">
+                <div class="mobile-word" id="mobileWord"></div>
+                <div class="mobile-translation" id="mobileTranslation"></div>
+            </div>
+            <button class="mobile-save" id="mobileSave" onclick="saveMobileWord()">Save</button>
+        </div>
+    </div>
+
+
+    <!-- Mobile Vocabulary Modal -->
+    <div id="mobileVocabModal" class="mobile-vocab-modal">
+        <div class="mobile-vocab-content">
+            <div class="mobile-vocab-header">
+                <div class="mobile-vocab-title">Saved Vocabulary</div>
+                <div class="vocab-header-controls">
+                    <button class="vocab-bin-btn" onclick="confirmClearVocab()" title="Clear All Vocabulary">🗑️</button>
+                    <button class="mobile-vocab-close" onclick="hideMobileVocab()">×</button>
+                </div>
+            </div>
+            
+            <div class="vocab-tabs">
+                <button class="vocab-tab active" id="browseTab" onclick="switchVocabTab('browse')">📚 Browse</button>
+                <button class="vocab-tab" id="filterTab" onclick="switchVocabTab('filter')">🔍 Filter</button>
+            </div>
+            
+            <div class="vocab-tab-content active" id="browseContent">
+                <div class="filter-status-bar" id="filterStatusBar" style="display: none;">
+                    <div class="filter-status-text" id="filterStatusText"></div>
+                    <button class="clear-filters-btn" id="clearFiltersBtn" onclick="clearAllFilters()">Clear</button>
+                </div>
+                <div class="mobile-vocab-list" id="mobileVocabList">
+                    <div style="text-align: center; color: #6b7280; padding: 20px;">No saved words yet</div>
+                </div>
+            </div>
+            
+            <div class="vocab-tab-content" id="filterContent">
+                <div class="filter-section">
+                    <div class="filter-label">Story Scope</div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" id="storyCurrentBtn" onclick="setStoryFilter('current')">This Story</button>
+                        <button class="filter-btn" id="storyAllBtn" onclick="setStoryFilter('all')">All Stories</button>
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-label">Difficulty Level</div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" id="diffAllBtn" onclick="setDifficultyFilter('all')">All Levels</button>
+                        <button class="filter-btn" id="diffEasyBtn" onclick="setDifficultyFilter('easy')">
+                            <span class="difficulty-dot difficulty-easy"></span>Easy
+                        </button>
+                        <button class="filter-btn" id="diffMediumBtn" onclick="setDifficultyFilter('medium')">
+                            <span class="difficulty-dot difficulty-medium"></span>Medium
+                        </button>
+                        <button class="filter-btn" id="diffHardBtn" onclick="setDifficultyFilter('hard')">
+                            <span class="difficulty-dot difficulty-hard"></span>Hard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - API calls now go through Vercel function
+        // No API key needed on client side
+        
+        // State
+        let vocabulary = [];
+        let translationCache = new Map();
+        let selectedWords = [];
+        let isSelecting = false;
+        let selectionStart = -1;
+        let currentPage = 0;
+        let pagesPerStory = [];
+        let isTranslated = false;
+        let translatedPages = new Map();
+        let bbcArticleLoaded = false;
+        let currentPopupWord = '';
+        let currentPopupTranslation = '';
+        let popupTimeout = null;
+
+        // Stories - split into pages (chunks)
+        let stories = [
+            "ایک چھوٹا پرندہ درخت پر بیٹھا تھا۔ وہ بہت خوش تھا۔ صبح کا وقت تھا اور سورج نکل رہا تھا۔ پرندہ خوبصورت گانا گا رہا تھا۔ اس کی آواز میں خوشی تھی۔ سب لوگ اس کا گانا سن رہے تھے۔",
+            "میرے گھر کے پاس ایک خوبصورت باغ ہے۔ اس میں کئی طرح کے رنگ برنگے پھول ہیں۔ گلاب کے پھول سرخ اور گلابی ہیں۔ چمیلی کے پھول سفید اور خوشبودار ہیں۔ ہر صبح میں باغ میں جاتا ہوں۔",
+            "احمد میرا بہترین دوست ہے۔ وہ بہت اچھا اور مہربان لڑکا ہے۔ ہم روزانہ اسکول جاتے ہیں۔ ہم ساتھ کھیلتے ہیں اور پڑھتے ہیں۔ احمد ہمیشہ میری مدد کرتا ہے۔ میں اس کا بہت شکریہ ادا کرتا ہوں۔",
+            "بلی چھت پر سو رہی تھی۔ اچانک بارش شروع ہوئی۔ بلی جلدی سے گھر کے اندر بھاگی۔ وہ اپنے بچوں کے پاس گئی۔ تمام بلیاں محفوظ تھیں۔ بارش رک گئی اور دھوپ نکل آئی۔"
+        ];
+
+        // Create optimized English headlines for BBC articles
+        function createOptimizedHeadline(urduTitle) {
+            // Map common Urdu article patterns to concise English headlines
+            const patterns = [
+                { urdu: /ایشیا کپ|کرکٹ/, english: "BBC Asia Cup Cricket Tournament" },
+                { urdu: /سوشل میڈیا.*پابندی|بچوں.*سوشل/, english: "BBC Social Media Age Restrictions" },
+                { urdu: /کرنسی|ڈالر|آئی ایس آئی/, english: "BBC Currency & ISI Investigation" },
+                { urdu: /پاکستان.*انڈیا/, english: "BBC Pakistan-India Relations" },
+                { urdu: /ٹک ٹاک|فیس بک|انسٹاگرام/, english: "BBC Social Media Platforms" },
+                { urdu: /کپ 2025/, english: "BBC Asia Cup 2025" }
+            ];
+            
+            // Check patterns and return optimized headline
+            for (const pattern of patterns) {
+                if (pattern.urdu.test(urduTitle)) {
+                    return pattern.english;
+                }
+            }
+            
+            // Fallback: create generic headline from first few words
+            const words = urduTitle.split(/\s+/).slice(0, 3);
+            return "BBC Urdu Article";
+        }
+
+        // Fetch and add BBC Urdu article from local HTML file
+        async function loadBBCArticle() {
+            if (bbcArticleLoaded) return;
+            
+            try {
+                // Fetch from your local HTML file
+                const htmlFileName = 'Sheet1.html';
+                console.log("Loading BBC article from local HTML file:", htmlFileName);
+                
+                const response = await fetch(htmlFileName);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const htmlText = await response.text();
+                
+                console.log("HTML data received:", htmlText.length, "characters");
+                
+                // Parse HTML table to get Row 1 only
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlText;
+                
+                // Find the first table
+                const tables = tempDiv.querySelectorAll('table');
+                console.log("Found", tables.length, "tables in HTML");
+                
+                if (tables.length > 0) {
+                    const firstTable = tables[0];
+                    const rows = firstTable.querySelectorAll('tr');
+                    console.log("Found", rows.length, "rows in first table");
+                    
+                    // Find Row 1 and Row 2 with actual data (not headers)
+                    let rowsProcessed = 0;
+                    for (let i = 0; i < rows.length && rowsProcessed < 2; i++) {
+                        const cells = rows[i].querySelectorAll('td');
+                        if (cells.length > 0) {
+                            // Check if this row has Urdu content
+                            const hasUrduContent = Array.from(cells).some(cell => {
+                                const text = cell.textContent.trim();
+                                return text.length > 20 && /[\u0600-\u06FF]/.test(text);
+                            });
+                            
+                            if (hasUrduContent) {
+                                rowsProcessed++;
+                                console.log(`Processing Row ${rowsProcessed}: Found ${cells.length} cells`);
+                                
+                                let title = "BBC Article";
+                                let content = "";
+                                
+                                // Get title from first cell (A column)
+                                if (cells[0] && cells[0].textContent.trim().length > 5) {
+                                    title = cells[0].textContent.trim();
+                                    console.log(`A${rowsProcessed} title:`, title.substring(0, 50));
+                                }
+                                
+                                // Get content from H cell (column 7, 0-indexed)
+                                const hCellIndex = 7;
+                                if (cells[hCellIndex]) {
+                                    let hContent = cells[hCellIndex].textContent.trim();
+                                    
+                                    // Clean image metadata from the beginning
+                                    hContent = cleanImageMetadata(hContent);
+                                    
+                                    if (hContent.length > 50) {
+                                        content = cleanLocalHTMLContent(hContent);
+                                        console.log(`H${rowsProcessed} content length:`, content.length);
+                                    }
+                                }
+                                
+                                if (content.length > 50) {
+                                    // Add to stories array
+                                    stories.push(content);
+                                    
+                                    // Add to dropdown with AI-optimized headline
+                                    const storySelect = document.getElementById('storySelect');
+                                    const option = document.createElement('option');
+                                    option.value = stories.length - 1;
+                                    
+                                    // Create AI-optimized English headline
+                                    const optimizedHeadline = createOptimizedHeadline(title);
+                                    option.textContent = `${stories.length}. ${optimizedHeadline}`;
+                                    
+                                    storySelect.appendChild(option);
+                                    console.log(`Added BBC article ${rowsProcessed} with headline:`, optimizedHeadline);
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (rowsProcessed === 0) {
+                        console.log("No rows with Urdu content found");
+                    } else {
+                        console.log(`Successfully processed ${rowsProcessed} BBC articles`);
+                    }
+                } else {
+                    console.log("No tables found in HTML file");
+                }
+                
+                // Re-initialize pages
+                initializePages();
+                
+                bbcArticleLoaded = true;
+                console.log("BBC article loaded successfully");
+                
+            } catch (error) {
+                console.error("Error loading BBC article:", error);
+            }
+        }
+
+
+        // Clean image metadata from article content
+        function cleanImageMetadata(content) {
+            // Remove image source metadata that starts articles - more aggressive
+            content = content.replace(/^،تصویر کا ذریعہ.*?(?=پاکستان|انڈیا|امریکہ|[آابپتثج])/s, '');
+            content = content.replace(/^Getty Images.*?(?=پاکستان|انڈیا|امریکہ|[آابپتثج])/s, '');
+            content = content.replace(/^Reuters.*?(?=پاکستان|انڈیا|امریکہ|[آابپتثج])/s, '');
+            content = content.replace(/^AFP.*?(?=پاکستان|انڈیا|امریکہ|[آابپتثج])/s, '');
+            
+            // Remove other metadata patterns throughout content
+            content = content.replace(/،تصویر کا ذریعہ[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/Getty Images[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/Reuters[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/AFP[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/Image[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/تصویر[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/ذریعہ[^۔]*۔?\s*/g, ' ');
+            
+            // Remove "End of" sections
+            content = content.replace(/End of[^۔]*۔?\s*/g, ' ');
+            
+            // Remove social media and sharing text
+            content = content.replace(/بی بی سی اردو کی خبروں[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/سبسکرائب کرنے کے لیے[^۔]*۔?\s*/g, ' ');
+            content = content.replace(/مواد پر جائیں\s*/g, ' ');
+            
+            // Remove metadata at the beginning that starts with image references
+            content = content.replace(/^[^آابپتثجحخدذرزسشصضطظعغفقکگلمنوہیے]*([آابپتثجحخدذرزسشصضطظعغفقکگلمنوہیے])/, '$1');
+            
+            // Clean up multiple spaces and line breaks
+            content = content.replace(/\s+/g, ' ').trim();
+            
+            return content;
+        }
+
+        // Clean content from local HTML file
+        function cleanLocalHTMLContent(content) {
+            // Remove extra whitespace
+            content = content.replace(/\s+/g, ' ').trim();
+            
+            // Remove any remaining HTML entities
+            content = content.replace(/&quot;/g, '"');
+            content = content.replace(/&amp;/g, '&');
+            content = content.replace(/&lt;/g, '<');
+            content = content.replace(/&gt;/g, '>');
+            content = content.replace(/&nbsp;/g, ' ');
+            
+            // Ensure proper sentence endings
+            if (!content.endsWith('۔') && !content.endsWith('!') && !content.endsWith('؟')) {
+                content += '۔';
+            }
+            
+            return content;
+        }
+
+        // Parse CSV row handling quoted fields
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+
+        // Clean content from Google Sheets
+        function cleanGoogleSheetContent(content) {
+            // Remove extra quotes that might come from CSV
+            content = content.replace(/^["']|["']$/g, '');
+            
+            // Normalize whitespace
+            content = content.replace(/\s+/g, ' ').trim();
+            
+            // Remove any remaining HTML entities or artifacts
+            content = content.replace(/&quot;/g, '"');
+            content = content.replace(/&amp;/g, '&');
+            content = content.replace(/&lt;/g, '<');
+            content = content.replace(/&gt;/g, '>');
+            
+            // Ensure proper sentence endings
+            if (!content.endsWith('۔') && !content.endsWith('!') && !content.endsWith('؟')) {
+                content += '۔';
+            }
+            
+            return content;
+        }
+
+        // Extract clean text from article HTML
+        function extractArticleText(html) {
+            // First decode any URL encoding in the HTML
+            try {
+                html = decodeURIComponent(html);
+            } catch (e) {
+                // If decoding fails, continue with original
+            }
+            
+            // Create a temporary div to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            console.log("Full HTML content length:", html.length);
+            console.log("Parsed DOM - total paragraphs found:", tempDiv.querySelectorAll('p').length);
+            
+            // Check if BBC is using JSON-LD structured data for the article
+            const jsonLdScripts = tempDiv.querySelectorAll('script[type="application/ld+json"]');
+            console.log("Found JSON-LD scripts:", jsonLdScripts.length);
+            
+            for (let script of jsonLdScripts) {
+                try {
+                    const jsonData = JSON.parse(script.textContent);
+                    if (jsonData.articleBody || (jsonData['@type'] === 'NewsArticle' && jsonData.text)) {
+                        const structuredText = jsonData.articleBody || jsonData.text;
+                        console.log("Found structured article text:", structuredText.length, "characters");
+                        if (structuredText.length > 500) {
+                            return structuredText;
+                        }
+                    }
+                } catch (e) {
+                    console.log("Failed to parse JSON-LD:", e.message);
+                }
+            }
+            
+            // AGGRESSIVE image and media removal first - before any content extraction
+            const mediaElements = tempDiv.querySelectorAll(`
+                img, video, audio, iframe, embed, object,
+                figure, picture, 
+                [class*="image"], [class*="photo"], [class*="video"], [class*="media"],
+                [data-component="image"], [data-component="video"], [data-component="media"],
+                .media, .image-wrapper, .video-wrapper, .photo-wrapper,
+                .caption, .photo-caption, .image-caption,
+                .credit, .photo-credit, .image-credit,
+                .copyright, .getty-image, .afp-image,
+                .share-tools, .social-share, .share-buttons,
+                .related-content, .related-links, .see-also,
+                .tags, .topic-tags, .story-tags,
+                .byline, .author-info, .dateline, .timestamp,
+                nav, header, footer, aside,
+                .advertisement, .ad, .sponsored,
+                script, style, noscript
+            `);
+            
+            console.log(`Removing ${mediaElements.length} media/unwanted elements`);
+            mediaElements.forEach(el => el.remove());
+            
+            // Try BBC-specific selectors for main content
+            let articleContent = tempDiv.querySelector('[data-component="text-block"]') ||
+                                tempDiv.querySelector('.story-body__inner') ||
+                                tempDiv.querySelector('.story-body') ||
+                                tempDiv.querySelector('.qa-story-body') ||
+                                tempDiv.querySelector('article') ||
+                                tempDiv.querySelector('.main-content') ||
+                                tempDiv.querySelector('#main-content') ||
+                                tempDiv.querySelector('[role="main"]');
+            
+            // If no main container found, collect ALL paragraphs from entire document
+            if (!articleContent) {
+                console.log("No main container found, collecting all paragraphs");
+                const allParagraphs = tempDiv.querySelectorAll('p');
+                console.log(`Found ${allParagraphs.length} total paragraphs`);
+                
+                if (allParagraphs.length > 0) {
+                    articleContent = document.createElement('div');
+                    
+                    // Filter and add paragraphs that contain actual Urdu content
+                    allParagraphs.forEach((p, index) => {
+                        const text = p.textContent.trim();
+                        
+                        // Check if paragraph contains meaningful Urdu text
+                        const hasUrduChars = /[\u0600-\u06FF]/.test(text); // Arabic/Urdu Unicode range
+                        const isLongEnough = text.length > 15;
+                        const notMetadata = !text.match(/^(Share|Published|Updated|By|Getty|AFP|Reuters|BBC)/i);
+                        const notNavigation = !text.match(/^(Home|News|Sport|Weather|Politics)/i);
+                        
+                        if (hasUrduChars && isLongEnough && notMetadata && notNavigation) {
+                            console.log(`Including paragraph ${index}: "${text.substring(0, 80)}..."`);
+                            articleContent.appendChild(p.cloneNode(true));
+                        } else {
+                            console.log(`Skipping paragraph ${index}: "${text.substring(0, 50)}..." (Urdu: ${hasUrduChars}, Long: ${isLongEnough})`);
+                        }
+                    });
+                }
+            } else {
+                console.log("Main container found, using it");
+            }
+            
+            if (articleContent) {
+                // Final cleanup of any remaining unwanted elements
+                const finalUnwanted = articleContent.querySelectorAll(`
+                    script, style, img, video, iframe, nav, footer, header, aside,
+                    .ad, .advertisement, .share, .social, .related, .tags, .metadata,
+                    [class*="share"], [class*="social"], [class*="ad"], [class*="promo"]
+                `);
+                finalUnwanted.forEach(el => el.remove());
+                
+                // Extract text while preserving paragraph structure
+                const paragraphs = articleContent.querySelectorAll('p');
+                const validParagraphs = [];
+                
+                console.log(`Processing ${paragraphs.length} paragraphs for content`);
+                
+                paragraphs.forEach((p, index) => {
+                    let text = p.textContent || p.innerText;
+                    
+                    // Decode URL encoding if present
+                    try {
+                        text = decodeURIComponent(text);
+                    } catch (e) {
+                        // If decoding fails, continue with original
+                    }
+                    
+                    // Basic cleaning while preserving structure
+                    text = text.trim();
+                    text = text.replace(/\s+/g, ' '); // Normalize whitespace but don't remove all structure
+                    
+                    // Light cleaning - only remove obvious artifacts
+                    text = text.replace(/\b(Share|Published|Updated|Getty Images|Reuters|AFP)\s*/gi, '');
+                    text = text.replace(/^\W+/, ''); // Remove leading punctuation/symbols
+                    
+                    // Check if this paragraph has meaningful Urdu content
+                    const hasUrduChars = /[\u0600-\u06FF]/.test(text);
+                    const isLongEnough = text.length > 20;
+                    const notJustMetadata = !text.match(/^(By|Published|Updated|Getty|AFP|Reuters|BBC|Share|Home|News)[\s\W]/i);
+                    
+                    if (hasUrduChars && isLongEnough && notJustMetadata && !text.includes('%D8%')) {
+                        console.log(`Including paragraph ${index}: "${text.substring(0, 100)}..."`);
+                        validParagraphs.push(text);
+                    } else {
+                        console.log(`Skipping paragraph ${index}: "${text.substring(0, 60)}..." (reasons: Urdu=${hasUrduChars}, Length=${isLongEnough}, NotMeta=${notJustMetadata})`);
+                    }
+                });
+                
+                // Join paragraphs with proper spacing to preserve structure
+                let fullText = validParagraphs.join(' ');
+                
+                // Final light cleanup
+                fullText = fullText.replace(/\s+/g, ' ').trim();
+                fullText = fullText.replace(/\s*[۔!؟]\s*[۔!؟]+/g, '۔ '); // Fix multiple punctuation
+                
+                // Don't limit word count - take the FULL article for complete learning
+                console.log(`Full article: ${validParagraphs.length} paragraphs, ${fullText.length} characters`);
+                
+                // Only ensure it ends properly
+                if (fullText && !fullText.endsWith('۔') && !fullText.endsWith('!') && !fullText.endsWith('؟')) {
+                    fullText += '۔';
+                }
+                
+                // Return full article if we have meaningful content
+                if (fullText.length > 200) {
+                    console.log(`Returning complete article with ${fullText.length} characters`);
+                    return fullText;
+                } else {
+                    console.log("Not enough content after processing");
+                    return null;
+                }
+            }
+            
+            console.log("No article content could be extracted");
+            return null;
+        }
+
+        // Split stories into pages (3 sentences per page)
+        function initializePages() {
+            pagesPerStory = stories.map(story => {
+                // Simple approach: find sentences by splitting on punctuation and keeping them intact
+                const sentences = [];
+                let currentSentence = '';
+                
+                for (let i = 0; i < story.length; i++) {
+                    currentSentence += story[i];
+                    
+                    // Check if we hit a sentence ending
+                    if (story[i] === '۔' || story[i] === '!' || story[i] === '؟') {
+                        sentences.push(currentSentence.trim());
+                        currentSentence = '';
+                        
+                        // Skip any whitespace after punctuation
+                        while (i + 1 < story.length && story[i + 1] === ' ') {
+                            i++;
+                        }
+                    }
+                }
+                
+                // Add any remaining text as a sentence
+                if (currentSentence.trim()) {
+                    sentences.push(currentSentence.trim());
+                }
+                
+                // Group sentences into pages
+                const pages = [];
+                for (let i = 0; i < sentences.length; i += 3) {
+                    const pageSentences = sentences.slice(i, i + 3);
+                    const pageText = pageSentences.join(' ');
+                    
+                    if (pageText.trim()) {
+                        pages.push(pageText);
+                    }
+                }
+                
+                return pages.length > 0 ? pages : [story];
+            });
+        }
+
+        // Load story
+        function loadStory(index) {
+            currentPage = 0;
+            isTranslated = false;
+            document.getElementById('translateToggle').textContent = 'Translate to English';
+            document.getElementById('translateToggle').classList.remove('translating');
+            loadCurrentPage(index);
+            updatePageNavigation(index);
+        }
+
+        // Load current page
+        function loadCurrentPage(storyIndex) {
+            const currentStoryPages = pagesPerStory[storyIndex];
+            const text = currentStoryPages[currentPage];
+            
+            if (!text) return;
+            
+            // Split by spaces but handle punctuation properly for RTL
+            const words = text.split(' ');
+            const html = words.map((word, i) => {
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                const isSaved = vocabulary.some(item => item.urdu === cleanWord || item.urdu.includes(cleanWord));
+                const savedClass = isSaved ? ' saved' : '';
+                
+                // For RTL text, wrap each word (including punctuation) in a span
+                // Use Unicode RLE (Right-to-Left Embedding) and PDF (Pop Directional Formatting)
+                return `<span class="urdu-word${savedClass}" 
+                    onmousedown="handleWord('${word.replace(/'/g, "\\'")}', ${i}, event)"
+                    onmouseenter="handleWordEnter(${i}, this)"
+                    ontouchstart="handleTouchStart('${word.replace(/'/g, "\\'")}', ${i}, event)"
+                    ontouchmove="handleTouchMove(${i}, event)"
+                    ontouchend="handleTouchEnd(event)"
+                    data-word-index="${i}"
+                    dir="rtl"
+                >${word}</span>`;
+            }).join(' ');
+            
+            // Ensure proper Urdu formatting
+            const textElement = document.getElementById('urduText');
+            textElement.innerHTML = html;
+            textElement.style.direction = 'rtl';
+            textElement.style.textAlign = 'right';
+            textElement.style.fontFamily = "'Noto Nastaliq Urdu', serif";
+            
+            selectedWords = [];
+            isSelecting = false;
+            updateSelectionUI();
+        }
+
+        // Update page navigation
+        function updatePageNavigation(storyIndex) {
+            const currentStoryPages = pagesPerStory[storyIndex];
+            const totalPages = currentStoryPages.length;
+            
+            document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 0;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages - 1;
+        }
+
+        // Previous page
+        function previousPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                const storyIndex = parseInt(document.getElementById('storySelect').value);
+                loadCurrentPage(storyIndex);
+                updatePageNavigation(storyIndex);
+                
+                // Reset translation state and styling for new page
+                isTranslated = false;
+                document.getElementById('translateToggle').textContent = 'Translate to English';
+                document.getElementById('translateToggle').classList.remove('translating');
+                
+                // Reset text direction to Urdu
+                const textElement = document.getElementById('urduText');
+                textElement.style.direction = 'rtl';
+                textElement.style.textAlign = 'right';
+                textElement.style.fontFamily = "'Noto Nastaliq Urdu', serif";
+            }
+        }
+
+        // Next page
+        function nextPage() {
+            const storyIndex = parseInt(document.getElementById('storySelect').value);
+            const totalPages = pagesPerStory[storyIndex].length;
+            
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                loadCurrentPage(storyIndex);
+                updatePageNavigation(storyIndex);
+                
+                // Reset translation state and styling for new page
+                isTranslated = false;
+                document.getElementById('translateToggle').textContent = 'Translate to English';
+                document.getElementById('translateToggle').classList.remove('translating');
+                
+                // Reset text direction to Urdu
+                const textElement = document.getElementById('urduText');
+                textElement.style.direction = 'rtl';
+                textElement.style.textAlign = 'right';
+                textElement.style.fontFamily = "'Noto Nastaliq Urdu', serif";
+            }
+        }
+
+        // Toggle page translation
+        async function togglePageTranslation() {
+            const toggleBtn = document.getElementById('translateToggle');
+            const storyIndex = parseInt(document.getElementById('storySelect').value);
+            const pageKey = `${storyIndex}-${currentPage}`;
+            
+            if (toggleBtn.classList.contains('translating')) return;
+            
+            if (isTranslated) {
+                // Switch back to Urdu
+                isTranslated = false;
+                toggleBtn.textContent = 'Translate to English';
+                loadCurrentPage(storyIndex);
+            } else {
+                // Translate to English
+                toggleBtn.textContent = 'Translating...';
+                toggleBtn.classList.add('translating');
+                
+                // Check if translation is cached
+                if (translatedPages.has(pageKey)) {
+                    displayTranslatedPage(translatedPages.get(pageKey));
+                    isTranslated = true;
+                    toggleBtn.textContent = 'Show Urdu';
+                    toggleBtn.classList.remove('translating');
+                } else {
+                    // Translate the page
+                    const currentText = pagesPerStory[storyIndex][currentPage];
+                    try {
+                        const translation = await translateText(currentText);
+                        translatedPages.set(pageKey, translation);
+                        displayTranslatedPage(translation);
+                        isTranslated = true;
+                        toggleBtn.textContent = 'Show Urdu';
+                    } catch (error) {
+                        alert('Translation failed. Please try again.');
+                        toggleBtn.textContent = 'Translate to English';
+                    }
+                    toggleBtn.classList.remove('translating');
+                }
+            }
+        }
+
+        // Display translated page
+        function displayTranslatedPage(translation) {
+            const words = translation.split(' ');
+            const html = words.map((word, i) => 
+                `<span class="urdu-word" style="direction: ltr;" dir="ltr">${word}</span>`
+            ).join(' ');
+            
+            const textElement = document.getElementById('urduText');
+            textElement.innerHTML = html;
+            textElement.style.direction = 'ltr';
+            textElement.style.textAlign = 'left';
+            textElement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        }
+
+        // Handle word click (start selection or toggle)
+        async function handleWord(word, index, event) {
+            const cleanWord = word.replace(/[۔،؟!]/g, '');
+            
+            // Check if this word is already selected/highlighted
+            if (event.target.classList.contains('selected') || event.target.classList.contains('active')) {
+                // Toggle off - unhighlight and hide popup
+                event.target.classList.remove('active', 'selected');
+                selectedWords = [];
+                isSelecting = false;
+                hideMobileTranslation();
+                return;
+            }
+            
+            // Clear previous selections
+            document.querySelectorAll('.urdu-word').forEach(w => {
+                w.classList.remove('active');
+                w.classList.remove('selected');
+            });
+            
+            // Start new selection
+            selectedWords = [index];
+            event.target.classList.add('selected');
+            isSelecting = true;
+            selectionStart = index;
+            
+            // Translate single word immediately
+            try {
+                // Check cache
+                if (translationCache.has(cleanWord)) {
+                    showTranslation(cleanWord, translationCache.get(cleanWord), event.target);
+                    return;
+                }
+                
+                document.getElementById('translationContent').innerHTML = 'Translating...';
+                const translation = await translateText(cleanWord);
+                translationCache.set(cleanWord, translation);
+                showTranslation(cleanWord, translation, event.target);
+            } catch (error) {
+                showTranslation(cleanWord, 'Translation error', event.target);
+            }
+        }
+
+        // Handle mouse enter for drag selection
+        function handleWordEnter(index, element) {
+            if (!isSelecting) return;
+            
+            // Clear current selection
+            document.querySelectorAll('.urdu-word').forEach(w => w.classList.remove('selected'));
+            
+            // Select range from start to current
+            const start = Math.min(selectionStart, index);
+            const end = Math.max(selectionStart, index);
+            
+            selectedWords = [];
+            const words = document.querySelectorAll('.urdu-word');
+            
+            for (let i = start; i <= end; i++) {
+                selectedWords.push(i);
+                words[i].classList.add('selected');
+            }
+            
+            // Update UI to show selection count
+            if (selectedWords.length > 1) {
+                updateSelectionUI();
+            }
+        }
+
+        // Handle mouse up (end selection)
+        function handleMouseUp() {
+            if (isSelecting && selectedWords.length > 1) {
+                // Translate the selected phrase
+                translateSelectedWords();
+            } else if (isSelecting && selectedWords.length === 1) {
+                // Single word was selected, translation already handled in handleWord
+            }
+            isSelecting = false;
+        }
+
+        // Update selection UI
+        function updateSelectionUI() {
+            const content = document.getElementById('translationContent');
+            
+            if (selectedWords.length === 0) {
+                content.innerHTML = 'Click any Urdu word to see its translation, or drag to select multiple words';
+            } else if (selectedWords.length === 1) {
+                // Single word selection - translation handled in handleWord
+                return;
+            } else {
+                content.innerHTML = `${selectedWords.length} words selected. Release mouse to translate phrase...`;
+            }
+        }
+
+        // Translate selected words as phrase
+        async function translateSelectedWords() {
+            if (selectedWords.length === 0) return;
+            
+            // Sort indices and get words
+            const sortedIndices = selectedWords.sort((a, b) => a - b);
+            const words = document.querySelectorAll('.urdu-word');
+            const phrase = sortedIndices.map(i => words[i].textContent).join(' ');
+            const cleanPhrase = phrase.replace(/[۔،؟!]/g, '');
+            
+            // Check cache
+            if (translationCache.has(cleanPhrase)) {
+                const firstElement = words[sortedIndices[0]];
+                showTranslation(cleanPhrase, translationCache.get(cleanPhrase), firstElement);
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('translationContent').innerHTML = 'Translating phrase...';
+            
+            try {
+                const translation = await translateText(cleanPhrase);
+                translationCache.set(cleanPhrase, translation);
+                const firstElement = words[sortedIndices[0]];
+                showTranslation(cleanPhrase, translation, firstElement);
+            } catch (error) {
+                const firstElement = words[sortedIndices[0]];
+                showTranslation(cleanPhrase, 'Translation error', firstElement);
+            }
+        }
+
+        // Common translation function - uses Vercel API
+        async function translateText(text) {
+            // Detect environment and use appropriate translation method
+            const isLocalPythonServer = window.location.hostname === '127.0.0.1' && window.location.port === '8000';
+            const isVercelDev = window.location.hostname === 'localhost' && window.location.port === '3000';
+            const isProduction = window.location.hostname.includes('vercel.app');
+            
+            if (isLocalPythonServer) {
+                // Running on Python server - use direct API call with local env
+                return await translateWithLocalEnv(text);
+            } else if (isVercelDev || isProduction) {
+                // Running on Vercel (dev or production) - use serverless function
+                return await translateWithServerless(text);
+            } else {
+                // Fallback
+                return await translateWithServerless(text);
+            }
+        }
+
+        // Translation via Vercel serverless function (dev + production)
+        async function translateWithServerless(text) {
+            const response = await fetch('/api/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Translation failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.translation || 'Translation not found';
+        }
+
+        // Direct translation with local environment variables
+        async function translateWithLocalEnv(text) {
+            // This would need the API key - for security, we'll fall back to serverless
+            // In a real app, you'd load this from your local .env file via a local server
+            console.log('Local Python server detected - falling back to mock for security');
+            
+            // Simple mock for local testing (replace with real implementation)
+            const quickMocks = {
+                'پاکستان': 'Pakistan', 'سینیٹ': 'Senate', 'بِل': 'bill',
+                'سوشل': 'social', 'میڈیا': 'media', 'بچوں': 'children'
+            };
+            
+            await new Promise(resolve => setTimeout(resolve, 300)); // Simulate delay
+            return quickMocks[text] || `[Local: ${text}]`;
+        }
+
+        // Show translation in appropriate location based on device
+        function showTranslation(word, translation, element) {
+            // Store current translation for save button
+            currentPopupWord = word;
+            currentPopupTranslation = translation;
+
+            // Check if mobile
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                // Show in mobile bottom bar
+                document.getElementById('mobileWord').textContent = word;
+                document.getElementById('mobileTranslation').textContent = translation;
+                document.getElementById('mobileTranslationBar').classList.add('show');
+            } else {
+                // Show in desktop sidebar
+                const isPhrase = word.includes(' ');
+                const buttonText = isPhrase ? 'Save Phrase' : 'Save Word';
+                
+                document.getElementById('translationContent').innerHTML = `
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-family: 'Noto Nastaliq Urdu', serif; font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 6px;">${word}</div>
+                        <div style="font-size: 16px; color: #4b5563; margin-bottom: 12px;">${translation}</div>
+                        <button onclick="saveDesktopWord()" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer;">${buttonText}</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Hide mobile translation bar
+        function hideMobileTranslation() {
+            document.getElementById('mobileTranslationBar').classList.remove('show');
+        }
+
+        // Save word from mobile bar
+        function saveMobileWord() {
+            if (currentPopupWord && currentPopupTranslation) {
+                saveWord(currentPopupWord, currentPopupTranslation);
+                hideMobileTranslation();
+            }
+        }
+
+        // Save word from desktop sidebar
+        function saveDesktopWord() {
+            if (currentPopupWord && currentPopupTranslation) {
+                saveWord(currentPopupWord, currentPopupTranslation);
+                
+                // Reset translation content
+                document.getElementById('translationContent').innerHTML = 'Click any Urdu word to see its translation';
+            }
+        }
+
+        // Show mobile vocabulary modal
+        function showMobileVocab() {
+            renderMobileVocabulary();
+            document.getElementById('mobileVocabModal').classList.add('show');
+        }
+
+        // Hide mobile vocabulary modal
+        function hideMobileVocab() {
+            document.getElementById('mobileVocabModal').classList.remove('show');
+        }
+
+        // State for vocabulary filtering
+        let showCurrentStoryOnly = true;
+        let currentDifficultyFilter = 'all'; // 'all', 'easy', 'medium', 'hard'
+
+        // Render mobile vocabulary list
+        function renderMobileVocabulary() {
+            const mobileVocabList = document.getElementById('mobileVocabList');
+            const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
+            
+            // Filter vocabulary based on current setting
+            let displayVocab = vocabulary;
+            if (showCurrentStoryOnly) {
+                displayVocab = vocabulary.filter(item => {
+                    // Check if word exists in current story
+                    const currentStory = stories[currentStoryIndex] || '';
+                    return currentStory.includes(item.urdu);
+                });
+            }
+            
+            // Filter by difficulty
+            if (currentDifficultyFilter !== 'all') {
+                displayVocab = displayVocab.filter(item => {
+                    const difficulty = item.difficulty || 'medium'; // Default for old words
+                    return difficulty === currentDifficultyFilter;
+                });
+            }
+            
+            if (displayVocab.length === 0) {
+                const message = showCurrentStoryOnly ? 'No saved words from this story' : 'No saved words yet';
+                mobileVocabList.innerHTML = `<div style="text-align: center; color: #6b7280; padding: 20px;">${message}</div>`;
+            } else {
+                mobileVocabList.innerHTML = displayVocab.map((item, index) => {
+                    const originalIndex = vocabulary.indexOf(item);
+                    const difficulty = item.difficulty || 'medium'; // Default for old words
+                    return `
+                        <div class="mobile-vocab-item">
+                            <div class="vocab-item-left">
+                                <span class="difficulty-dot difficulty-dot-large difficulty-${difficulty}" onclick="cycleDifficulty(${originalIndex})" title="Tap to change difficulty"></span>
+                                <div class="vocab-item-text">
+                                    <div class="mobile-vocab-word">${item.urdu}</div>
+                                    <div class="mobile-vocab-translation">${item.english}</div>
+                                </div>
+                            </div>
+                            <div class="mobile-vocab-actions">
+                                <button onclick="goToWord('${item.urdu.replace(/'/g, "\\'")}', this)" style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer;">Go to</button>
+                                <button onclick="removeMobileVocabItem(${originalIndex})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer;">×</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Update filter button appearances
+            updateFilterButtonStates();
+            
+            // Update filter status display
+            updateFilterStatus();
+            
+            // Update badge count
+            updateVocabBadge();
+        }
+
+        // Switch between Browse and Filter tabs
+        function switchVocabTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.vocab-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.vocab-tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Content').classList.add('active');
+        }
+
+        // Update filter button states
+        function updateFilterButtonStates() {
+            // Story filter buttons
+            document.querySelectorAll('.filter-btn[id^="story"]').forEach(btn => btn.classList.remove('active'));
+            const storyBtnId = showCurrentStoryOnly ? 'storyCurrentBtn' : 'storyAllBtn';
+            document.getElementById(storyBtnId)?.classList.add('active');
+            
+            // Difficulty filter buttons
+            document.querySelectorAll('.filter-btn[id^="diff"]').forEach(btn => btn.classList.remove('active'));
+            const diffBtnId = `diff${currentDifficultyFilter.charAt(0).toUpperCase() + currentDifficultyFilter.slice(1)}Btn`;
+            document.getElementById(diffBtnId)?.classList.add('active');
+        }
+
+        // Update vocabulary count badge
+        function updateVocabBadge() {
+            const badge = document.getElementById('topVocabBadge');
+            if (badge) {
+                badge.textContent = vocabulary.length;
+                badge.style.display = vocabulary.length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // Remove individual vocabulary item from mobile
+        function removeMobileVocabItem(index) {
+            const word = vocabulary[index];
+            if (word && confirm(`🗑️ Delete "${word.urdu}" (${word.english}) from vocabulary?`)) {
+                vocabulary.splice(index, 1);
+                localStorage.setItem('urduVocabulary', JSON.stringify(vocabulary));
+                renderMobileVocabulary();
+                updateVocabulary(); // Update desktop sidebar too
+            }
+        }
+
+        // Set story filter
+        function setStoryFilter(scope) {
+            showCurrentStoryOnly = (scope === 'current');
+            renderMobileVocabulary();
+            updateFilterButtonStates();
+        }
+
+        // Set difficulty filter
+        function setDifficultyFilter(difficulty) {
+            currentDifficultyFilter = difficulty;
+            renderMobileVocabulary();
+            updateFilterButtonStates();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            showCurrentStoryOnly = true; // Reset to default
+            currentDifficultyFilter = 'all'; // Reset to default
+            renderMobileVocabulary();
+            updateFilterButtonStates();
+        }
+
+        // Update filter status display
+        function updateFilterStatus() {
+            const filterStatusBar = document.getElementById('filterStatusBar');
+            const filterStatusText = document.getElementById('filterStatusText');
+            
+            const hasFilters = !showCurrentStoryOnly || currentDifficultyFilter !== 'all';
+            
+            if (hasFilters) {
+                filterStatusBar.style.display = 'flex';
+                
+                let statusParts = [];
+                
+                // Story scope filter
+                if (!showCurrentStoryOnly) {
+                    statusParts.push('All Stories');
+                }
+                
+                // Difficulty filter
+                if (currentDifficultyFilter !== 'all') {
+                    const difficultyName = currentDifficultyFilter.charAt(0).toUpperCase() + currentDifficultyFilter.slice(1);
+                    statusParts.push(`${difficultyName} only`);
+                }
+                
+                const statusText = statusParts.length > 0 ? `🔍 Filtered by: ${statusParts.join(', ')}` : '';
+                
+                // Count filtered vs total words
+                const totalWords = vocabulary.length;
+                const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
+                
+                let displayVocab = vocabulary;
+                if (showCurrentStoryOnly) {
+                    displayVocab = vocabulary.filter(item => {
+                        const currentStory = stories[currentStoryIndex] || '';
+                        return currentStory.includes(item.urdu);
+                    });
+                }
+                if (currentDifficultyFilter !== 'all') {
+                    displayVocab = displayVocab.filter(item => {
+                        const difficulty = item.difficulty || 'medium';
+                        return difficulty === currentDifficultyFilter;
+                    });
+                }
+                
+                const filteredCount = displayVocab.length;
+                const countText = ` | Showing ${filteredCount} of ${totalWords} words`;
+                
+                filterStatusText.innerHTML = statusText + countText;
+            } else {
+                filterStatusBar.style.display = 'none';
+            }
+        }
+
+        // Cycle through difficulty levels
+        function cycleDifficulty(index) {
+            const item = vocabulary[index];
+            if (!item) return;
+            
+            const difficulties = ['easy', 'medium', 'hard'];
+            const currentDiff = item.difficulty || 'medium';
+            const currentIndex = difficulties.indexOf(currentDiff);
+            const nextIndex = (currentIndex + 1) % difficulties.length;
+            
+            item.difficulty = difficulties[nextIndex];
+            
+            // Save to localStorage
+            localStorage.setItem('urduVocabulary', JSON.stringify(vocabulary));
+            
+            // Re-render both mobile and desktop
+            renderMobileVocabulary();
+            updateVocabulary();
+        }
+
+        // Confirm before clearing all vocabulary
+        function confirmClearVocab() {
+            const totalWords = vocabulary.length;
+            if (totalWords === 0) {
+                alert('No vocabulary to clear!');
+                return;
+            }
+            
+            const firstConfirm = confirm(`⚠️ Delete all ${totalWords} saved words?\n\nThis action cannot be undone.`);
+            if (firstConfirm) {
+                const secondConfirm = confirm(`🗑️ Are you absolutely sure?\n\nThis will permanently delete all your vocabulary progress.`);
+                if (secondConfirm) {
+                    vocabulary = [];
+                    localStorage.removeItem('urduVocabulary');
+                    renderMobileVocabulary();
+                    updateVocabulary(); // Update desktop sidebar too
+                    alert('✅ All vocabulary cleared.');
+                }
+            }
+        }
+
+        // Go to word in text (improved from jumpToWord)
+        function goToWord(targetWord, buttonElement) {
+            // First check if word exists in current story
+            const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
+            const currentStory = stories[currentStoryIndex] || '';
+            
+            if (currentStory.includes(targetWord)) {
+                // Word is in current story - highlight it
+                hideMobileVocab();
+                
+                // Find and highlight the word
+                setTimeout(() => {
+                    const words = document.querySelectorAll('.urdu-word');
+                    let found = false;
+                    
+                    words.forEach(word => {
+                        if (word.textContent.trim() === targetWord) {
+                            word.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            word.style.background = '#fbbf24';
+                            word.style.color = '#1f2937';
+                            
+                            // Reset highlight after 3 seconds
+                            setTimeout(() => {
+                                word.style.background = '';
+                                word.style.color = '';
+                            }, 3000);
+                            
+                            found = true;
+                        }
+                    });
+                    
+                    if (!found) {
+                        alert('Word not found in current view. Try navigating to different pages.');
+                    }
+                }, 100);
+            } else {
+                // Word not in current story - search other stories
+                let foundInStory = -1;
+                for (let i = 0; i < stories.length; i++) {
+                    if (stories[i].includes(targetWord)) {
+                        foundInStory = i;
+                        break;
+                    }
+                }
+                
+                if (foundInStory !== -1) {
+                    if (confirm(`Word "${targetWord}" is in story ${foundInStory + 1}. Go there now?`)) {
+                        hideMobileVocab();
+                        document.getElementById('storySelect').value = foundInStory;
+                        loadStory(foundInStory);
+                        
+                        // Highlight after story loads
+                        setTimeout(() => goToWord(targetWord, null), 500);
+                    }
+                } else {
+                    alert(`Word "${targetWord}" not found in any story. It may have been from a BBC article.`);
+                }
+            }
+        }
+
+        // Save word
+        function saveWord(urdu, english) {
+            if (vocabulary.some(item => item.urdu === urdu)) {
+                alert('Already saved!');
+                return;
+            }
+            
+            vocabulary.push({ 
+                urdu, 
+                english, 
+                difficulty: 'medium' // Default difficulty
+            });
+            updateVocabulary();
+            updateVocabBadge(); // Update mobile badge count
+        }
+
+        // Check which story contains a word
+        function findStoryForWord(targetWord) {
+            const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
+            
+            // Check current story first
+            const currentWords = stories[currentStoryIndex].split(' ');
+            const foundInCurrent = currentWords.some(word => {
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                return cleanWord === targetWord || 
+                       targetWord.includes(cleanWord) || 
+                       cleanWord.includes(targetWord);
+            });
+            
+            if (foundInCurrent) {
+                return { found: true, isCurrent: true, storyIndex: currentStoryIndex, storyName: document.getElementById('storySelect').options[currentStoryIndex].text };
+            }
+            
+            // Check other stories
+            for (let i = 0; i < stories.length; i++) {
+                if (i !== currentStoryIndex) {
+                    const words = stories[i].split(' ');
+                    const foundInStory = words.some(word => {
+                        const cleanWord = word.replace(/[۔،؟!]/g, '');
+                        return cleanWord === targetWord || 
+                               targetWord.includes(cleanWord) || 
+                               cleanWord.includes(targetWord);
+                    });
+                    
+                    if (foundInStory) {
+                        return { found: true, isCurrent: false, storyIndex: i, storyName: document.getElementById('storySelect').options[i].text };
+                    }
+                }
+            }
+            
+            return { found: false };
+        }
+
+        // Update vocabulary display
+        function updateVocabulary() {
+            const list = document.getElementById('vocabList');
+            const clearBtn = document.getElementById('clearButton');
+            
+            if (vocabulary.length === 0) {
+                list.innerHTML = '<div class="empty-vocab">No saved words yet</div>';
+                clearBtn.style.display = 'none';
+            } else {
+                clearBtn.style.display = 'block';
+                list.innerHTML = vocabulary.map((item, index) => {
+                    const storyInfo = findStoryForWord(item.urdu);
+                    let tooltipText;
+                    
+                    if (!storyInfo.found) {
+                        tooltipText = `"${item.urdu}" not found in any story`;
+                    } else if (storyInfo.isCurrent) {
+                        tooltipText = `Go to "${item.urdu}" in current story`;
+                    } else {
+                        tooltipText = `Go to "${item.urdu}" in "${storyInfo.storyName}"`;
+                    }
+                    
+                    const difficulty = item.difficulty || 'medium'; // Default for old words
+                    return `
+                        <div class="vocab-item">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="difficulty-dot difficulty-${difficulty}" onclick="cycleDifficulty(${index})" title="Click to change difficulty"></span>
+                                <div>
+                                    <div class="vocab-word">${item.urdu}</div>
+                                    <div class="vocab-translation">${item.english}</div>
+                                </div>
+                            </div>
+                            <div class="vocab-actions">
+                                <div class="tooltip">
+                                    <button class="jump-button" onclick="goToWord('${item.urdu.replace(/'/g, "\\'")}')">
+                                        Go to
+                                    </button>
+                                    <span class="tooltiptext">${tooltipText}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Update saved word indicators in the story
+            updateSavedWordIndicators();
+        }
+
+        // Update saved word indicators
+        function updateSavedWordIndicators() {
+            const words = document.querySelectorAll('.urdu-word');
+            words.forEach(wordElement => {
+                const word = wordElement.textContent;
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                const isSaved = vocabulary.some(item => 
+                    item.urdu === cleanWord || 
+                    item.urdu.includes(cleanWord) ||
+                    cleanWord.includes(item.urdu)
+                );
+                
+                if (isSaved) {
+                    wordElement.classList.add('saved');
+                } else {
+                    wordElement.classList.remove('saved');
+                }
+            });
+        }
+
+        // Jump to word in story
+        function jumpToWord(targetWord) {
+            // First check if word exists in current story
+            const currentWords = document.querySelectorAll('.urdu-word');
+            let foundInCurrent = false;
+            
+            currentWords.forEach(wordElement => {
+                const word = wordElement.textContent;
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                
+                if (cleanWord === targetWord || 
+                    targetWord.includes(cleanWord) || 
+                    cleanWord.includes(targetWord)) {
+                    foundInCurrent = true;
+                }
+            });
+            
+            if (foundInCurrent) {
+                // Word found in current story, just highlight it
+                highlightWordInCurrentStory(targetWord);
+            } else {
+                // Word not found, search other stories
+                findWordInOtherStories(targetWord);
+            }
+        }
+
+        // Highlight word in current story
+        function highlightWordInCurrentStory(targetWord) {
+            const words = document.querySelectorAll('.urdu-word');
+            
+            words.forEach(wordElement => {
+                const word = wordElement.textContent;
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                
+                if (cleanWord === targetWord || 
+                    targetWord.includes(cleanWord) || 
+                    cleanWord.includes(targetWord)) {
+                    
+                    // Clear previous highlights
+                    words.forEach(w => w.classList.remove('active', 'selected'));
+                    
+                    // Highlight the found word
+                    wordElement.classList.add('active');
+                    
+                    // Scroll to the word
+                    wordElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // Flash effect
+                    wordElement.style.animation = 'flash 1s ease-in-out';
+                    setTimeout(() => {
+                        wordElement.style.animation = '';
+                    }, 1000);
+                    
+                    return;
+                }
+            });
+        }
+
+        // Find word in other stories
+        function findWordInOtherStories(targetWord) {
+            let foundStoryIndex = -1;
+            
+            // Search through all stories
+            stories.forEach((story, index) => {
+                if (foundStoryIndex === -1) {
+                    const words = story.split(' ');
+                    words.forEach(word => {
+                        const cleanWord = word.replace(/[۔،؟!]/g, '');
+                        if (cleanWord === targetWord || 
+                            targetWord.includes(cleanWord) || 
+                            cleanWord.includes(targetWord)) {
+                            foundStoryIndex = index;
+                        }
+                    });
+                }
+            });
+            
+            if (foundStoryIndex !== -1) {
+                // Get story names from the select options
+                const storySelect = document.getElementById('storySelect');
+                const storyName = storySelect.options[foundStoryIndex].text;
+                
+                const confirmMessage = `"${targetWord}" was found in "${storyName}". Switch to that story?`;
+                
+                if (confirm(confirmMessage)) {
+                    // Switch to the story
+                    storySelect.value = foundStoryIndex;
+                    loadStory(foundStoryIndex);
+                    
+                    // Wait for story to load, then highlight the word
+                    setTimeout(() => {
+                        highlightWordInCurrentStory(targetWord);
+                    }, 100);
+                }
+            } else {
+                alert(`"${targetWord}" not found in any story.`);
+            }
+        }
+
+        // Clear vocabulary
+        function clearVocabulary() {
+            if (confirm('Clear all vocabulary?')) {
+                vocabulary = [];
+                updateVocabulary();
+            }
+        }
+
+        // Initialize
+        initializePages();
+        loadStory(0);
+        
+        // Load BBC article on startup
+        loadBBCArticle();
+        
+        // Initialize mobile vocabulary badge
+        updateVocabBadge();
+        
+        // Add global mouse up event listener for drag selection
+        document.addEventListener('mouseup', handleMouseUp);
+        
+        // Add click listener to hide mobile translation and clear highlights when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            const mobileBar = document.getElementById('mobileTranslationBar');
+            const isMobileBar = e.target.closest('#mobileTranslationBar');
+            const isUrduWord = e.target.classList.contains('urdu-word');
+            
+            if (!isMobileBar && !isUrduWord) {
+                // Hide mobile translation bar if showing
+                if (mobileBar.classList.contains('show')) {
+                    hideMobileTranslation();
+                }
+                
+                // Clear all word highlights
+                clearWordHighlights();
+                selectedWords = [];
+                isSelecting = false;
+            }
+        });
+        
+        // Function to clear all word highlights
+        function clearWordHighlights() {
+            document.querySelectorAll('.urdu-word').forEach(word => {
+                word.classList.remove('active', 'selected');
+            });
+            selectedWords = [];
+            isSelecting = false;
+        }
+        
+        // Touch event handlers for mobile multi-word selection
+        let touchStartTime = 0;
+        let lastTouchTarget = null;
+        
+        function handleTouchStart(word, index, event) {
+            event.preventDefault(); // Prevent scrolling
+            touchStartTime = Date.now();
+            lastTouchTarget = event.target;
+            
+            // Check if this word is already selected/highlighted
+            if (event.target.classList.contains('selected') || event.target.classList.contains('active')) {
+                // Toggle off - unhighlight and hide popup
+                event.target.classList.remove('active', 'selected');
+                selectedWords = [];
+                isSelecting = false;
+                hideMobileTranslation();
+                return;
+            }
+            
+            // Clear previous selections
+            document.querySelectorAll('.urdu-word').forEach(w => {
+                w.classList.remove('active');
+                w.classList.remove('selected');
+            });
+            
+            // Start new selection
+            selectedWords = [index];
+            event.target.classList.add('selected');
+            isSelecting = true;
+            selectionStart = index;
+        }
+        
+        function handleTouchMove(index, event) {
+            if (!isSelecting) return;
+            
+            event.preventDefault(); // Prevent scrolling
+            
+            // Find the element under the touch point
+            const touch = event.touches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (elementBelow && elementBelow.classList.contains('urdu-word')) {
+                const currentIndex = parseInt(elementBelow.getAttribute('data-word-index'));
+                
+                // Clear current selection
+                document.querySelectorAll('.urdu-word').forEach(w => w.classList.remove('selected'));
+                
+                // Select range from start to current
+                const start = Math.min(selectionStart, currentIndex);
+                const end = Math.max(selectionStart, currentIndex);
+                
+                selectedWords = [];
+                const words = document.querySelectorAll('.urdu-word');
+                
+                for (let i = start; i <= end; i++) {
+                    selectedWords.push(i);
+                    words[i].classList.add('selected');
+                }
+                
+                // Update UI to show selection count
+                if (selectedWords.length > 1) {
+                    updateSelectionUI();
+                }
+            }
+        }
+        
+        async function handleTouchEnd(event) {
+            const touchDuration = Date.now() - touchStartTime;
+            
+            if (isSelecting && selectedWords.length > 1) {
+                // Multi-word selection - translate phrase
+                translateSelectedWords();
+            } else if (isSelecting && selectedWords.length === 1 && touchDuration < 500) {
+                // Single word tap - translate immediately
+                const index = selectedWords[0];
+                const words = document.querySelectorAll('.urdu-word');
+                const word = words[index].textContent;
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                
+                try {
+                    // Check cache
+                    if (translationCache.has(cleanWord)) {
+                        showTranslation(cleanWord, translationCache.get(cleanWord), words[index]);
+                        return;
+                    }
+                    
+                    document.getElementById('translationContent').innerHTML = 'Translating...';
+                    const translation = await translateText(cleanWord);
+                    translationCache.set(cleanWord, translation);
+                    showTranslation(cleanWord, translation, words[index]);
+                } catch (error) {
+                    showTranslation(cleanWord, 'Translation error', words[index]);
+                }
+            }
+            
+            isSelecting = false;
+        }
+    </script>
+</body>
+</html>
