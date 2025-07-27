@@ -32,6 +32,55 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+        
+        .auth-section {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .auth-button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .auth-button:hover {
+            background: #3367d6;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .sign-out-btn {
+            background: #dc3545;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .sign-out-btn:hover {
+            background: #c82333;
         }
 
         .header h1 {
@@ -928,6 +977,9 @@
 <body>
     <div class="container">
         <header class="header">
+            <div class="auth-section" id="authSection">
+                <!-- Auth UI will be dynamically updated -->
+            </div>
             <h1>اردو Learning Studio</h1>
             <p>Click words for instant translation</p>
         </header>
@@ -1055,7 +1107,23 @@
         </div>
     </div>
 
+    <!-- Supabase JavaScript SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Supabase configuration
+        const supabaseUrl = 'https://uymviyrdoewqtwicrkdlqk.supabase.co'
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5bXZpeWRvZXdxdHdpY3JrbHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2NTA3MTgsImV4cCI6MjA2OTIyNjcxOH0.OdkfTjn-c6aXBTvqedUg9gJg-ShD1CBWc6Gnfpe-96U'
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
+        
+        // Authentication state
+        let currentUser = null
+        
+        // Initialize auth UI immediately
+        function initAuthUI() {
+            updateAuthUI()
+        }
+        
         // Configuration - API calls now go through Vercel function
         // No API key needed on client side
         
@@ -1105,6 +1173,244 @@
             const words = urduTitle.split(/\s+/).slice(0, 3);
             return "BBC Urdu Article";
         }
+
+        // =============================================
+        // AUTHENTICATION FUNCTIONS
+        // =============================================
+        
+        // Initialize authentication
+        async function initAuth() {
+            try {
+                // Get current session
+                const { data: { session } } = await supabaseClient.auth.getSession()
+                if (session) {
+                    currentUser = session.user
+                    updateAuthUI()
+                    await loadUserVocabulary()
+                }
+                
+                // Listen for auth changes
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'SIGNED_IN') {
+                        currentUser = session.user
+                        updateAuthUI()
+                        await migrateLocalVocabulary()
+                        await loadUserVocabulary()
+                    } else if (event === 'SIGNED_OUT') {
+                        currentUser = null
+                        updateAuthUI()
+                        vocabulary = []
+                        updateVocabularyUI()
+                    }
+                })
+            } catch (error) {
+                console.error('Auth initialization error:', error)
+            }
+        }
+        
+        // Sign in with Google
+        async function signInWithGoogle() {
+            try {
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+                })
+                if (error) throw error
+            } catch (error) {
+                console.error('Sign in error:', error)
+                alert('Sign in failed. Please try again.')
+            }
+        }
+        
+        // Sign out
+        async function signOut() {
+            try {
+                const { error } = await supabaseClient.auth.signOut()
+                if (error) throw error
+            } catch (error) {
+                console.error('Sign out error:', error)
+            }
+        }
+        
+        // Update authentication UI
+        function updateAuthUI() {
+            const authSection = document.getElementById('authSection')
+            
+            if (currentUser) {
+                authSection.innerHTML = `
+                    <div class="user-info">
+                        <img src="${currentUser.user_metadata.avatar_url || 'https://via.placeholder.com/32'}" 
+                             alt="User avatar" class="user-avatar">
+                        <span>${currentUser.user_metadata.full_name || currentUser.email}</span>
+                        <button class="auth-button sign-out-btn" onclick="signOut()">Sign Out</button>
+                    </div>
+                `
+            } else {
+                authSection.innerHTML = `
+                    <button class="auth-button" onclick="signInWithGoogle()">
+                        📧 Sign in with Google
+                    </button>
+                `
+            }
+        }
+        
+        // Migrate existing localStorage vocabulary to user account
+        async function migrateLocalVocabulary() {
+            if (!currentUser) return
+            
+            try {
+                const localVocab = JSON.parse(localStorage.getItem('vocabulary') || '[]')
+                if (localVocab.length === 0) return
+                
+                // Check if user already has vocabulary in database
+                const { data: existingVocab } = await supabaseClient
+                    .from('user_vocabulary')
+                    .select('urdu_word')
+                    .eq('user_id', currentUser.id)
+                
+                const existingWords = new Set(existingVocab?.map(v => v.urdu_word) || [])
+                
+                // Only migrate words that don't already exist
+                const wordsToMigrate = localVocab.filter(word => !existingWords.has(word.urdu))
+                
+                if (wordsToMigrate.length > 0) {
+                    const { error } = await supabaseClient
+                        .from('user_vocabulary')
+                        .insert(wordsToMigrate.map(word => ({
+                            user_id: currentUser.id,
+                            urdu_word: word.urdu,
+                            english_translation: word.english,
+                            difficulty: word.difficulty || 'easy'
+                        })))
+                    
+                    if (error) throw error
+                    
+                    // Clear localStorage after successful migration
+                    localStorage.removeItem('vocabulary')
+                    console.log(`Migrated ${wordsToMigrate.length} words to user account`)
+                }
+            } catch (error) {
+                console.error('Migration error:', error)
+            }
+        }
+        
+        // Load user vocabulary from database
+        async function loadUserVocabulary() {
+            if (!currentUser) return
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_vocabulary')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                
+                if (error) throw error
+                
+                vocabulary = data.map(item => ({
+                    urdu: item.urdu_word,
+                    english: item.english_translation,
+                    difficulty: item.difficulty,
+                    id: item.id
+                }))
+                
+                updateVocabularyUI()
+            } catch (error) {
+                console.error('Load vocabulary error:', error)
+            }
+        }
+        
+        // Save vocabulary word to database
+        async function saveVocabularyToDatabase(urdu, english, difficulty = 'easy') {
+            if (!currentUser) {
+                // Fallback to localStorage if not signed in
+                saveToLocalStorage(urdu, english, difficulty)
+                return
+            }
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_vocabulary')
+                    .insert({
+                        user_id: currentUser.id,
+                        urdu_word: urdu,
+                        english_translation: english,
+                        difficulty: difficulty
+                    })
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                
+                // Add to local vocabulary array
+                vocabulary.unshift({
+                    urdu: urdu,
+                    english: english,
+                    difficulty: difficulty,
+                    id: data.id
+                })
+                
+                updateVocabularyUI()
+            } catch (error) {
+                console.error('Save vocabulary error:', error)
+                // Fallback to localStorage
+                saveToLocalStorage(urdu, english, difficulty)
+            }
+        }
+        
+        // Update vocabulary difficulty in database
+        async function updateVocabularyDifficulty(wordId, newDifficulty) {
+            if (!currentUser) return
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('user_vocabulary')
+                    .update({ difficulty: newDifficulty })
+                    .eq('id', wordId)
+                    .eq('user_id', currentUser.id)
+                
+                if (error) throw error
+            } catch (error) {
+                console.error('Update difficulty error:', error)
+            }
+        }
+        
+        // Delete vocabulary word from database
+        async function deleteVocabularyFromDatabase(wordId) {
+            if (!currentUser) return
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('user_vocabulary')
+                    .delete()
+                    .eq('id', wordId)
+                    .eq('user_id', currentUser.id)
+                
+                if (error) throw error
+            } catch (error) {
+                console.error('Delete vocabulary error:', error)
+            }
+        }
+        
+        // Fallback localStorage functions for non-authenticated users
+        function saveToLocalStorage(urdu, english, difficulty) {
+            vocabulary.unshift({ urdu, english, difficulty })
+            localStorage.setItem('vocabulary', JSON.stringify(vocabulary))
+            updateVocabularyUI()
+        }
+        
+        // Update vocabulary UI (unified function for both mobile and desktop)
+        function updateVocabularyUI() {
+            updateVocabulary() // Update desktop sidebar
+            renderMobileVocabulary() // Update mobile modal
+            updateVocabBadge() // Update mobile badge count
+        }
+
+        // =============================================
+        // BBC ARTICLE FUNCTIONS
+        // =============================================
 
         // Fetch and add BBC Urdu article from local HTML file
         async function loadBBCArticle() {
@@ -2210,18 +2516,14 @@
         }
 
         // Save word
-        function saveWord(urdu, english) {
+        async function saveWord(urdu, english) {
             if (vocabulary.some(item => item.urdu === urdu)) {
                 alert('Already saved!');
                 return;
             }
             
-            vocabulary.push({ 
-                urdu, 
-                english, 
-                difficulty: 'medium' // Default difficulty
-            });
-            updateVocabulary();
+            // Use database if authenticated, otherwise localStorage
+            await saveVocabularyToDatabase(urdu, english, 'medium');
             updateVocabBadge(); // Update mobile badge count
         }
 
@@ -2444,6 +2746,12 @@
         // Initialize
         initializePages();
         loadStory(0);
+        
+        // Initialize authentication UI immediately
+        initAuthUI();
+        
+        // Initialize authentication
+        initAuth();
         
         // Load BBC article on startup
         loadBBCArticle();
