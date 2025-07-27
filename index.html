@@ -1114,14 +1114,32 @@
         // Supabase configuration
         const supabaseUrl = 'https://uymviyrdoewqtwicrkdlqk.supabase.co'
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5bXZpeWRvZXdxdHdpY3JrbHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2NTA3MTgsImV4cCI6MjA2OTIyNjcxOH0.OdkfTjn-c6aXBTvqedUg9gJg-ShD1CBWc6Gnfpe-96U'
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
+        let supabaseClient = null
         
         // Authentication state
         let currentUser = null
         
+        // Initialize Supabase client safely
+        function initSupabase() {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
+                return true
+            }
+            return false
+        }
+        
         // Initialize auth UI immediately
         function initAuthUI() {
-            updateAuthUI()
+            if (initSupabase()) {
+                updateAuthUI()
+            } else {
+                // Try again in a moment if Supabase hasn't loaded yet
+                setTimeout(() => {
+                    if (initSupabase()) {
+                        updateAuthUI()
+                    }
+                }, 100)
+            }
         }
         
         // Configuration - API calls now go through Vercel function
@@ -1180,6 +1198,11 @@
         
         // Initialize authentication
         async function initAuth() {
+            if (!supabaseClient) {
+                console.log('Supabase client not initialized yet')
+                return
+            }
+            
             try {
                 // Get current session
                 const { data: { session } } = await supabaseClient.auth.getSession()
@@ -1210,6 +1233,11 @@
         
         // Sign in with Google
         async function signInWithGoogle() {
+            if (!supabaseClient) {
+                alert('Authentication system not ready. Please refresh the page.')
+                return
+            }
+            
             try {
                 const { error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
