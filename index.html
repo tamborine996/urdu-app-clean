@@ -1136,9 +1136,9 @@
                     const rows = firstTable.querySelectorAll('tr');
                     console.log("Found", rows.length, "rows in first table");
                     
-                    // Find Row 1 and Row 2 with actual data (not headers)
+                    // Find Row 1, Row 2, and Row 3 with actual data (not headers)
                     let rowsProcessed = 0;
-                    for (let i = 0; i < rows.length && rowsProcessed < 2; i++) {
+                    for (let i = 0; i < rows.length && rowsProcessed < 3; i++) {
                         const cells = rows[i].querySelectorAll('td');
                         if (cells.length > 0) {
                             // Check if this row has Urdu content
