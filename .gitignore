@@ -17,5 +17,6 @@ Thumbs.db
 
 # Images that might be temporary
 error.jpg
+errorscreens/
 .vercel
 .env*.local

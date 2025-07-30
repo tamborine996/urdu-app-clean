@@ -131,6 +131,11 @@
             overflow-y: auto;
             background: #f9fafb;
             border-radius: 0 0 12px 12px;
+            /* MOBILE FIX: Prevent horizontal overflow */
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .urdu-text {
@@ -144,6 +149,13 @@
             border: none;
             min-height: 300px;
             height: 100%;
+            /* MOBILE FIX: Proper text wrapping */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .urdu-word {
@@ -672,15 +684,58 @@
         .mobile-vocab-close {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             color: #6b7280;
             cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
+            padding: 8px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-vocab-close:hover {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        /* Novel progress bar styles */
+        .novel-progress {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .progress-text {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #22c55e);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .progress-percent {
+            font-size: 12px;
+            font-weight: 600;
+            color: #10b981;
         }
 
         .mobile-vocab-list {
@@ -911,7 +966,11 @@
             .story-panel {
                 border-right: none;
                 border-bottom: 1px solid #e5e7eb;
-                padding: 20px;
+                padding: 15px 10px;
+                /* MOBILE FIX: Better mobile layout */
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .story-controls {
@@ -924,6 +983,11 @@
                 justify-content: center;
                 flex-wrap: wrap;
                 gap: 8px;
+                /* MOBILE FIX: Ensure navigation buttons fit properly */
+                padding: 10px 5px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
             }
             
             .translation-toggle {
@@ -949,8 +1013,12 @@
             }
             
             .container {
-                margin: 10px;
+                margin: 5px;
                 border-radius: 15px;
+                /* MOBILE FIX: Ensure full width usage */
+                width: calc(100% - 10px);
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .header {
@@ -961,14 +1029,211 @@
                 font-size: 2rem;
             }
             
+            .text-reading-area {
+                /* MOBILE FIX: Better text area constraints */
+                padding: 8px;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            
             .urdu-text {
                 font-size: 16px;
                 line-height: 2.0;
-                padding: 15px;
+                padding: 5px;
+                /* MOBILE FIX: Ensure proper wrapping on mobile */
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: pre-wrap;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                /* MOBILE FIX: Prevent text from expanding beyond container */
+                hyphens: auto;
+                -webkit-hyphens: auto;
+                -ms-hyphens: auto;
+                /* MOBILE FIX: Ensure RTL text doesn't overflow */
+                margin: 0;
+                border: none;
+                outline: none;
+            }
+            
+            /* MOBILE FIX: Better page navigation visibility - removed duplicate */
+            
+            .page-button {
+                min-width: 90px;
+                padding: 12px 16px;
+                font-size: 15px;
+                white-space: nowrap;
+            }
+            
+            .page-info {
+                min-width: 110px;
+                font-size: 15px;
+                text-align: center;
+                padding: 0 10px;
             }
             
             .sidebar {
                 padding: 20px;
+            }
+        }
+        
+        /* COMPREHENSIVE MOBILE FIX: Complete mobile layout redesign */
+        @media (max-width: 480px) {
+            * {
+                box-sizing: border-box;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
+            }
+            
+            .container {
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+            
+            .header {
+                padding: 40px 8px 8px 8px;
+                margin: 0;
+                width: 100%;
+                position: relative;
+            }
+            
+            .auth-section {
+                position: absolute;
+                top: 4px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10;
+                width: auto;
+            }
+            
+            .auth-button {
+                padding: 4px 8px;
+                font-size: 11px;
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+                margin: 0 0 8px 0;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+                margin: 0;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .story-panel {
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                max-width: 100vw;
+                height: calc(100vh - 140px);
+                border-radius: 0;
+                overflow: hidden;
+            }
+            
+            .top-controls-bar {
+                padding: 6px 4px;
+                margin: 0;
+                width: 100%;
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .controls-left, .controls-right {
+                width: 100%;
+                margin: 0;
+                padding: 0 2px;
+            }
+            
+            .controls-left select {
+                width: 100%;
+                font-size: 13px;
+                padding: 6px;
+                margin-bottom: 4px;
+            }
+            
+            .page-navigation {
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                gap: 2px;
+                padding: 2px;
+                margin: 0;
+            }
+            
+            .page-button {
+                flex: 0 0 auto;
+                min-width: 60px;
+                max-width: 80px;
+                padding: 4px 6px;
+                font-size: 11px;
+                border-radius: 3px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .page-info {
+                flex: 1;
+                font-size: 11px;
+                text-align: center;
+                min-width: 60px;
+                padding: 0 2px;
+                white-space: nowrap;
+            }
+            
+            .toggle-button {
+                width: 100%;
+                max-width: none;
+                padding: 6px 8px;
+                font-size: 12px;
+                margin: 2px 0;
+            }
+            
+            .text-reading-area {
+                padding: 4px;
+                margin: 0;
+                width: 100%;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            
+            .urdu-text {
+                font-size: 14px;
+                line-height: 1.8;
+                padding: 4px;
+                margin: 0;
+                width: 100%;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: pre-wrap;
+                direction: rtl;
+                text-align: right;
+            }
+            
+            .urdu-word {
+                padding: 1px 2px;
             }
         }
     </style>
@@ -994,6 +1259,14 @@
                             <option value="2">3. The Friend • دوست</option>
                             <option value="3">4. The Cat • بلی</option>
                         </select>
+                        
+                        <div id="novelProgress" class="novel-progress" style="display: none; margin-left: 15px;">
+                            <span class="progress-text">📚 Novel: </span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <span class="progress-percent" id="progressPercent">0%</span>
+                        </div>
                         
                         <div class="page-navigation">
                             <button class="page-button" id="prevPageBtn" onclick="previousPage()" disabled>← Previous</button>
@@ -1054,13 +1327,13 @@
 
 
     <!-- Mobile Vocabulary Modal -->
-    <div id="mobileVocabModal" class="mobile-vocab-modal">
-        <div class="mobile-vocab-content">
+    <div id="mobileVocabModal" class="mobile-vocab-modal" onclick="closeMobileVocabOnOverlay(event)">
+        <div class="mobile-vocab-content" onclick="event.stopPropagation()">
             <div class="mobile-vocab-header">
                 <div class="mobile-vocab-title">Saved Vocabulary</div>
                 <div class="vocab-header-controls">
                     <button class="vocab-bin-btn" onclick="confirmClearVocab()" title="Clear All Vocabulary">🗑️</button>
-                    <button class="mobile-vocab-close" onclick="hideMobileVocab()">×</button>
+                    <button class="mobile-vocab-close" onclick="hideMobileVocab()" title="Close (changes saved automatically)">×</button>
                 </div>
             </div>
             
@@ -1167,6 +1440,25 @@
             "احمد میرا بہترین دوست ہے۔ وہ بہت اچھا اور مہربان لڑکا ہے۔ ہم روزانہ اسکول جاتے ہیں۔ ہم ساتھ کھیلتے ہیں اور پڑھتے ہیں۔ احمد ہمیشہ میری مدد کرتا ہے۔ میں اس کا بہت شکریہ ادا کرتا ہوں۔",
             "بلی چھت پر سو رہی تھی۔ اچانک بارش شروع ہوئی۔ بلی جلدی سے گھر کے اندر بھاگی۔ وہ اپنے بچوں کے پاس گئی۔ تمام بلیاں محفوظ تھیں۔ بارش رک گئی اور دھوپ نکل آئی۔"
         ];
+        
+        // Novel episodes metadata
+        const novelData = {
+            title: "Mann Kay Muhallay Mein",
+            author: "Shakeel Ahmed Chohan", 
+            totalEpisodes: 24,
+            baseUrl: "https://www.urdupoint.com/books/detail/mann-kay-muhallay-mein/",
+            episodes: [
+                { id: 7972, title: "Episode 1" },
+                { id: 7973, title: "Episode 2" },
+                { id: 7974, title: "Episode 3" },
+                { id: 7980, title: "Episode 4" },
+                { id: 7983, title: "Episode 5" },
+                // Add more episodes as discovered
+            ]
+        };
+        
+        // Novel progress tracking (stored in localStorage)
+        let novelProgress = JSON.parse(localStorage.getItem('novelProgress') || '{"currentEpisode": 1, "episodesRead": [], "bookmarks": {}}');
 
         // Create optimized English headlines for BBC articles
         function createOptimizedHeadline(urduTitle) {
@@ -1251,11 +1543,30 @@
         
         // Sign out
         async function signOut() {
+            if (!supabaseClient) {
+                alert('Authentication system not ready. Please refresh the page.')
+                return
+            }
+            
             try {
+                console.log('Signing out...')
                 const { error } = await supabaseClient.auth.signOut()
                 if (error) throw error
+                
+                // Manually handle sign out state cleanup
+                currentUser = null
+                vocabulary = []
+                updateAuthUI()
+                updateVocabularyUI()
+                
+                // Clear any localStorage as well
+                localStorage.removeItem('vocabulary')
+                
+                console.log('Successfully signed out')
+                alert('Successfully signed out!')
             } catch (error) {
                 console.error('Sign out error:', error)
+                alert('Sign out failed. Please try again.')
             }
         }
         
@@ -1321,7 +1632,7 @@
             }
         }
         
-        // Load user vocabulary from database
+        // Load user vocabulary from database (excluding soft-deleted)
         async function loadUserVocabulary() {
             if (!currentUser) return
             
@@ -1330,6 +1641,7 @@
                     .from('user_vocabulary')
                     .select('*')
                     .eq('user_id', currentUser.id)
+                    .is('deleted_at', null)  // Filter out soft-deleted words
                     .order('created_at', { ascending: false })
                 
                 if (error) throw error
@@ -1338,17 +1650,25 @@
                     urdu: item.urdu_word,
                     english: item.english_translation,
                     difficulty: item.difficulty,
-                    id: item.id
+                    id: item.id,
+                    story_index: item.story_index,
+                    character_position: item.character_position,
+                    saved_from_context: item.saved_from_context
                 }))
                 
+                console.log(`Loaded ${vocabulary.length} active words from database:`, vocabulary)
                 updateVocabularyUI()
             } catch (error) {
                 console.error('Load vocabulary error:', error)
+                // Fallback to localStorage if database fails
+                const localVocab = JSON.parse(localStorage.getItem('vocabulary') || '[]')
+                vocabulary = localVocab
+                updateVocabularyUI()
             }
         }
         
-        // Save vocabulary word to database
-        async function saveVocabularyToDatabase(urdu, english, difficulty = 'easy') {
+        // Save vocabulary word to database with location context
+        async function saveVocabularyToDatabase(urdu, english, difficulty = 'easy', locationContext = null) {
             if (!currentUser) {
                 // Fallback to localStorage if not signed in
                 saveToLocalStorage(urdu, english, difficulty)
@@ -1356,14 +1676,24 @@
             }
             
             try {
+                const insertData = {
+                    user_id: currentUser.id,
+                    urdu_word: urdu,
+                    english_translation: english,
+                    difficulty: difficulty
+                };
+                
+                // Add location context if available
+                if (locationContext) {
+                    insertData.story_index = locationContext.story_index;
+                    insertData.character_position = locationContext.character_position; 
+                    insertData.saved_from_context = locationContext.saved_from_context;
+                    console.log('Saving with location context:', locationContext);
+                }
+                
                 const { data, error } = await supabaseClient
                     .from('user_vocabulary')
-                    .insert({
-                        user_id: currentUser.id,
-                        urdu_word: urdu,
-                        english_translation: english,
-                        difficulty: difficulty
-                    })
+                    .insert(insertData)
                     .select()
                     .single()
                 
@@ -1374,7 +1704,10 @@
                     urdu: urdu,
                     english: english,
                     difficulty: difficulty,
-                    id: data.id
+                    id: data.id,
+                    story_index: locationContext?.story_index,
+                    character_position: locationContext?.character_position,
+                    saved_from_context: locationContext?.saved_from_context
                 })
                 
                 updateVocabularyUI()
@@ -1387,35 +1720,54 @@
         
         // Update vocabulary difficulty in database
         async function updateVocabularyDifficulty(wordId, newDifficulty) {
-            if (!currentUser) return
+            if (!currentUser) {
+                console.log('No current user - cannot update difficulty in database')
+                return
+            }
+            
+            if (!wordId) {
+                console.error('No wordId provided for difficulty update')
+                return
+            }
+            
+            console.log(`Updating difficulty for word ID ${wordId} to ${newDifficulty}`)
             
             try {
-                const { error } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('user_vocabulary')
                     .update({ difficulty: newDifficulty })
                     .eq('id', wordId)
                     .eq('user_id', currentUser.id)
+                    .select()
                 
                 if (error) throw error
+                
+                console.log('Difficulty update successful:', data)
             } catch (error) {
                 console.error('Update difficulty error:', error)
+                alert(`Failed to update difficulty: ${error.message}`)
             }
         }
         
-        // Delete vocabulary word from database
+        // Soft delete vocabulary word from database
         async function deleteVocabularyFromDatabase(wordId) {
             if (!currentUser) return
             
+            console.log(`Soft deleting word ID: ${wordId}`)
+            
             try {
-                const { error } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('user_vocabulary')
-                    .delete()
+                    .update({ deleted_at: new Date().toISOString() })
                     .eq('id', wordId)
                     .eq('user_id', currentUser.id)
+                    .select()
                 
                 if (error) throw error
+                console.log('Soft delete successful:', data)
             } catch (error) {
-                console.error('Delete vocabulary error:', error)
+                console.error('Soft delete error:', error)
+                alert(`Failed to delete word: ${error.message}`)
             }
         }
         
@@ -1845,10 +2197,12 @@
                     sentences.push(currentSentence.trim());
                 }
                 
-                // Group sentences into pages
+                // Group sentences into pages (IMPROVED: More sentences per page for better reading)
                 const pages = [];
-                for (let i = 0; i < sentences.length; i += 3) {
-                    const pageSentences = sentences.slice(i, i + 3);
+                const sentencesPerPage = 12; // Increased from 3 to 12 for better reading experience
+                
+                for (let i = 0; i < sentences.length; i += sentencesPerPage) {
+                    const pageSentences = sentences.slice(i, i + sentencesPerPage);
                     const pageText = pageSentences.join(' ');
                     
                     if (pageText.trim()) {
@@ -1868,6 +2222,9 @@
             document.getElementById('translateToggle').classList.remove('translating');
             loadCurrentPage(index);
             updatePageNavigation(index);
+            
+            // Check if this is a novel episode and mark progress
+            checkAndMarkNovelEpisode(parseInt(index));
         }
 
         // Load current page
@@ -2257,6 +2614,48 @@
         // Hide mobile vocabulary modal
         function hideMobileVocab() {
             document.getElementById('mobileVocabModal').classList.remove('show');
+            // Show brief confirmation that changes are saved
+            showSaveConfirmation();
+        }
+        
+        // Show save confirmation
+        function showSaveConfirmation() {
+            // Create temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 3000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = '✓ Changes saved automatically';
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
+        }
+        
+        // Close modal when clicking outside
+        function closeMobileVocabOnOverlay(event) {
+            // Only close if clicking the overlay itself, not the content
+            if (event.target === event.currentTarget) {
+                hideMobileVocab();
+            }
         }
 
         // State for vocabulary filtering
@@ -2355,11 +2754,28 @@
         }
 
         // Remove individual vocabulary item from mobile
-        function removeMobileVocabItem(index) {
+        async function removeMobileVocabItem(index) {
             const word = vocabulary[index];
             if (word && confirm(`🗑️ Delete "${word.urdu}" (${word.english}) from vocabulary?`)) {
+                console.log(`Deleting word at index ${index}:`, word);
+                
+                // Delete from database if user is authenticated
+                if (currentUser && word.id) {
+                    console.log(`User authenticated, soft deleting from database`);
+                    await deleteVocabularyFromDatabase(word.id);
+                } else {
+                    console.log(`Anonymous user or no word ID, removing from localStorage only`);
+                }
+                
+                // Remove from local array
                 vocabulary.splice(index, 1);
-                localStorage.setItem('urduVocabulary', JSON.stringify(vocabulary));
+                
+                // Update localStorage for anonymous users
+                if (!currentUser) {
+                    localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                }
+                
+                // Update UI
                 renderMobileVocabulary();
                 updateVocabulary(); // Update desktop sidebar too
             }
@@ -2440,9 +2856,14 @@
         }
 
         // Cycle through difficulty levels
-        function cycleDifficulty(index) {
+        async function cycleDifficulty(index) {
             const item = vocabulary[index];
-            if (!item) return;
+            if (!item) {
+                console.error('No vocabulary item at index:', index);
+                return;
+            }
+            
+            console.log(`Cycling difficulty for item:`, item);
             
             const difficulties = ['easy', 'medium', 'hard'];
             const currentDiff = item.difficulty || 'medium';
@@ -2450,9 +2871,19 @@
             const nextIndex = (currentIndex + 1) % difficulties.length;
             
             item.difficulty = difficulties[nextIndex];
+            console.log(`Changed difficulty from ${currentDiff} to ${item.difficulty}`);
             
-            // Save to localStorage
-            localStorage.setItem('urduVocabulary', JSON.stringify(vocabulary));
+            // Update database if user is authenticated
+            if (currentUser && item.id) {
+                console.log(`User authenticated (${currentUser.id}), updating database for word ID: ${item.id}`);
+                await updateVocabularyDifficulty(item.id, item.difficulty);
+                console.log(`Updated difficulty for "${item.urdu}" to ${item.difficulty}`);
+            } else {
+                console.log(`Not updating database - currentUser: ${!!currentUser}, item.id: ${item.id}`);
+                // Fallback to localStorage for anonymous users
+                localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                console.log('Saved to localStorage instead');
+            }
             
             // Re-render both mobile and desktop
             renderMobileVocabulary();
@@ -2472,7 +2903,7 @@
                 const secondConfirm = confirm(`🗑️ Are you absolutely sure?\n\nThis will permanently delete all your vocabulary progress.`);
                 if (secondConfirm) {
                     vocabulary = [];
-                    localStorage.removeItem('urduVocabulary');
+                    localStorage.removeItem('vocabulary');
                     renderMobileVocabulary();
                     updateVocabulary(); // Update desktop sidebar too
                     alert('✅ All vocabulary cleared.');
@@ -2480,8 +2911,94 @@
             }
         }
 
-        // Go to word in text (improved from jumpToWord)
+        // Go to word in text using precise character position
         function goToWord(targetWord, buttonElement) {
+            console.log(`Looking for word: "${targetWord}"`);
+            
+            // Find vocabulary item with precise location data
+            const vocabItem = vocabulary.find(item => item.urdu === targetWord);
+            
+            if (vocabItem && vocabItem.story_index !== undefined && vocabItem.character_position !== undefined) {
+                console.log(`Found precise location for "${targetWord}":`, vocabItem);
+                goToPreciseLocation(vocabItem, buttonElement);
+                return;
+            }
+            
+            console.log(`No precise location data, using fallback search for "${targetWord}"`);
+            goToWordOriginal(targetWord, buttonElement);
+        }
+        
+        // Navigate to precise stored location
+        function goToPreciseLocation(vocabItem, buttonElement) {
+            const targetStoryIndex = vocabItem.story_index;
+            const targetPosition = vocabItem.character_position;
+            const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
+            
+            console.log(`Navigating to story ${targetStoryIndex}, position ${targetPosition}`);
+            
+            if (currentStoryIndex !== targetStoryIndex) {
+                // Switch to correct story first
+                if (confirm(`Word "${vocabItem.urdu}" is in story ${targetStoryIndex + 1}. Go there now?`)) {
+                    hideMobileVocab();
+                    document.getElementById('storySelect').value = targetStoryIndex;
+                    loadStory(targetStoryIndex);
+                    
+                    // Navigate to precise position after story loads
+                    setTimeout(() => {
+                        highlightWordAtPosition(vocabItem.urdu, targetPosition, targetStoryIndex);
+                    }, 500);
+                }
+            } else {
+                // Already in correct story, find precise position
+                hideMobileVocab();
+                highlightWordAtPosition(vocabItem.urdu, targetPosition, targetStoryIndex);
+            }
+        }
+        
+        // Highlight word at specific character position
+        function highlightWordAtPosition(targetWord, position, storyIndex) {
+            console.log(`Highlighting "${targetWord}" at position ${position} in story ${storyIndex}`);
+            
+            // For now, use the original highlighting method
+            // TODO: Calculate exact page from character position
+            setTimeout(() => {
+                const words = document.querySelectorAll('.urdu-word');
+                let found = false;
+                
+                words.forEach(word => {
+                    if (word.textContent.trim() === targetWord) {
+                        // Scroll to word
+                        word.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Highlight word with green background (precise location indicator)
+                        word.style.background = '#22c55e';
+                        word.style.color = 'white';
+                        word.style.fontWeight = 'bold';
+                        word.style.border = '2px solid #16a34a';
+                        
+                        // Remove highlight after 4 seconds
+                        setTimeout(() => {
+                            word.style.background = '';
+                            word.style.color = '';
+                            word.style.fontWeight = '';
+                            word.style.border = '';
+                        }, 4000);
+                        
+                        found = true;
+                        console.log(`Successfully highlighted "${targetWord}" at precise location`);
+                        return;
+                    }
+                });
+                
+                if (!found) {
+                    console.log(`Could not find "${targetWord}" - using fallback`);
+                    alert('Word saved from different location. Using search...');
+                }
+            }, 100);
+        }
+        
+        // Original go to word function (fallback)
+        function goToWordOriginal(targetWord, buttonElement) {
             // First check if word exists in current story
             const currentStoryIndex = parseInt(document.getElementById('storySelect').value);
             const currentStory = stories[currentStoryIndex] || '';
@@ -2540,16 +3057,56 @@
             }
         }
 
-        // Save word
+        // Save word with precise location context
         async function saveWord(urdu, english) {
             if (vocabulary.some(item => item.urdu === urdu)) {
                 alert('Already saved!');
                 return;
             }
             
+            // Calculate character position for precise "Go to" functionality
+            const locationContext = calculateWordPosition(urdu);
+            
             // Use database if authenticated, otherwise localStorage
-            await saveVocabularyToDatabase(urdu, english, 'medium');
+            await saveVocabularyToDatabase(urdu, english, 'medium', locationContext);
             updateVocabBadge(); // Update mobile badge count
+        }
+        
+        // Calculate exact character position and context for saved word
+        function calculateWordPosition(targetWord) {
+            const storyIndex = parseInt(document.getElementById('storySelect').value);
+            const currentStoryText = stories[storyIndex] || '';
+            const currentPageText = pagesPerStory[storyIndex] ? pagesPerStory[storyIndex][currentPage] : '';
+            
+            console.log(`Calculating position for "${targetWord}" in story ${storyIndex}, page ${currentPage}`);
+            
+            // Find where current page starts in full story
+            let pageStartPosition = 0;
+            if (pagesPerStory[storyIndex]) {
+                for (let i = 0; i < currentPage; i++) {
+                    pageStartPosition += pagesPerStory[storyIndex][i].length;
+                }
+            }
+            
+            // Find word position within current page
+            const wordPositionInPage = currentPageText.indexOf(targetWord);
+            
+            // Calculate absolute character position in full story
+            const absolutePosition = pageStartPosition + wordPositionInPage;
+            
+            // Create context snippet (50 chars before and after)
+            const contextStart = Math.max(0, absolutePosition - 50);
+            const contextEnd = Math.min(currentStoryText.length, absolutePosition + targetWord.length + 50);
+            const contextSnippet = currentStoryText.substring(contextStart, contextEnd);
+            
+            console.log(`Word position: page ${wordPositionInPage}, absolute ${absolutePosition}`);
+            console.log(`Context: "${contextSnippet}"`);
+            
+            return {
+                story_index: storyIndex,
+                character_position: absolutePosition,
+                saved_from_context: contextSnippet
+            };
         }
 
         // Check which story contains a word
@@ -2780,6 +3337,176 @@
         
         // Load BBC article on startup
         loadBBCArticle();
+        
+        // Load novel episodes on startup
+        loadNovelEpisodes();
+        
+        // Load novel episodes from external files (PROPER ARCHITECTURE)
+        let novelEpisodesLoaded = false; // Prevent duplicate loading
+        
+        async function loadNovelEpisodes() {
+            if (novelEpisodesLoaded) {
+                console.log('Novel episodes already loaded, skipping duplicate call');
+                return;
+            }
+            
+            console.log('Loading novel episodes from external files...');
+            novelEpisodesLoaded = true; // Mark as loading to prevent duplicates
+            
+            try {
+                // Load Episode 1 from external file
+                await loadNovelEpisode(1);
+                
+                // Future episodes can be loaded similarly:
+                // await loadNovelEpisode(2);
+                // await loadNovelEpisode(3);
+                
+            } catch (error) {
+                console.error('Error loading novel episodes:', error);
+                // Fallback: add minimal placeholder if file loading fails
+                await addPlaceholderEpisode();
+            }
+        }
+        
+        // Load a specific novel episode from external file
+        async function loadNovelEpisode(episodeNumber) {
+            console.log(`Loading Episode ${episodeNumber} from external file...`);
+            
+            try {
+                const response = await fetch(`/mkm-chapters/ep${episodeNumber}.txt`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Episode ${episodeNumber} file not found`);
+                }
+                
+                const episodeContent = await response.text();
+                
+                if (!episodeContent.trim()) {
+                    throw new Error(`Episode ${episodeNumber} file is empty`);
+                }
+                
+                // Add to stories array
+                stories.push(episodeContent);
+                
+                // Add to dropdown
+                const storySelect = document.getElementById('storySelect');
+                const option = document.createElement('option');
+                option.value = stories.length - 1;
+                option.textContent = `${stories.length}. Mann Kay Muhallay Mein - Episode ${episodeNumber} • من کے محلے میں`;
+                option.style.backgroundColor = '#e8f5e8'; // Light green background for novel
+                storySelect.appendChild(option);
+                
+                // Re-initialize pages to include new story
+                initializePages();
+                
+                console.log(`✅ Successfully loaded Episode ${episodeNumber} from external file (${episodeContent.length} characters)`);
+                
+                return true;
+                
+            } catch (error) {
+                console.error(`❌ Failed to load Episode ${episodeNumber}:`, error);
+                throw error;
+            }
+        }
+        
+        // Fallback function if external file loading fails
+        async function addPlaceholderEpisode() {
+            console.log('Adding placeholder episode due to loading failure...');
+            
+            const placeholderContent = `قسط نمبر1 - من کے محلے میں - شکیل احمد چوہان
+
+⚠️ Episode content loading failed
+
+یہ صرف ایک placeholder ہے۔ اصل content external file سے load نہیں ہو سکا۔
+
+Technical Error: Unable to fetch episode content from /mkm-chapters/ep1.txt
+
+Please check:
+1. File exists at correct location
+2. Server is running properly
+3. File permissions are correct`;
+            
+            // Add to stories array
+            stories.push(placeholderContent);
+            
+            // Add to dropdown
+            const storySelect = document.getElementById('storySelect');
+            const option = document.createElement('option');
+            option.value = stories.length - 1;
+            option.textContent = `${stories.length}. Mann Kay Muhallay Mein - Episode 1 (Error) • من کے محلے میں`;
+            option.style.backgroundColor = '#ffe8e8'; // Light red background for error
+            storySelect.appendChild(option);
+            
+            // Re-initialize pages to include new story
+            initializePages();
+            
+            console.log('Added placeholder episode due to loading failure');
+        }
+        
+        // Function to scrape actual novel content (for future use)
+        async function scrapeNovelEpisode(episodeNumber) {
+            const episode = novelData.episodes[episodeNumber - 1];
+            if (!episode) {
+                console.error('Episode not found:', episodeNumber);
+                return;
+            }
+            
+            const url = `${novelData.baseUrl}${episode.id}/episode-${episodeNumber}.html`;
+            console.log('Would scrape from:', url);
+            
+            // Note: Actual scraping would require backend/proxy due to CORS
+            // For now, return placeholder
+            return `یہ ایپیسوڈ ${episodeNumber} کا متن ہے۔ یہاں اصل کہانی کا متن ہوگا۔`;
+        }
+        
+        // Novel progress tracking functions
+        function saveNovelProgress() {
+            localStorage.setItem('novelProgress', JSON.stringify(novelProgress));
+        }
+        
+        function markEpisodeAsRead(episodeNumber) {
+            if (!novelProgress.episodesRead.includes(episodeNumber)) {
+                novelProgress.episodesRead.push(episodeNumber);
+                novelProgress.currentEpisode = Math.max(novelProgress.currentEpisode, episodeNumber + 1);
+                saveNovelProgress();
+                updateNovelProgressUI();
+            }
+        }
+        
+        function updateNovelProgressUI() {
+            // Update progress indicators in the UI
+            const progress = Math.round((novelProgress.episodesRead.length / novelData.totalEpisodes) * 100);
+            console.log(`Novel progress: ${progress}% (${novelProgress.episodesRead.length}/${novelData.totalEpisodes} episodes)`);
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const novelProgressDiv = document.getElementById('novelProgress');
+            
+            if (progressFill && progressPercent) {
+                progressFill.style.width = `${progress}%`;
+                progressPercent.textContent = `${progress}%`;
+                
+                // Show progress bar if there's any progress
+                if (novelProgress.episodesRead.length > 0 && novelProgressDiv) {
+                    novelProgressDiv.style.display = 'flex';
+                }
+            }
+        }
+        
+        // Check if current story is a novel episode and mark as read
+        function checkAndMarkNovelEpisode(storyIndex) {
+            // Novel episodes start after the original 4 stories + BBC articles
+            if (storyIndex >= 4) {
+                const episodeNumber = storyIndex - 3; // Adjust for BBC articles
+                if (episodeNumber <= novelData.totalEpisodes) {
+                    markEpisodeAsRead(episodeNumber);
+                }
+            }
+        }
+        
+        // Load novel episodes on startup
+        loadNovelEpisodes();
         
         // Initialize mobile vocabulary badge
         updateVocabBadge();

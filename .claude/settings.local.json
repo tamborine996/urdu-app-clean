@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(vercel:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:www.urdupoint.com)",
+      "Bash(mkdir:*)",
+      "Bash(copy:*)",
+      "Bash(cp:*)",
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
