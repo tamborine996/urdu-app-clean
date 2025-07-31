@@ -458,7 +458,7 @@
             border-radius: 12px;
             width: 100%;
             max-width: 400px;
-            max-height: 70vh;
+            max-height: 80vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -742,6 +742,8 @@
             padding: 15px 20px;
             overflow-y: auto;
             flex-grow: 1;
+            max-height: calc(80vh - 200px);
+            -webkit-overflow-scrolling: touch;
         }
 
         .mobile-vocab-item {
@@ -2763,15 +2765,16 @@
                 if (currentUser && word.id) {
                     console.log(`User authenticated, soft deleting from database`);
                     await deleteVocabularyFromDatabase(word.id);
+                    
+                    // Reload vocabulary from database to reflect the soft delete
+                    await loadUserVocabulary();
                 } else {
                     console.log(`Anonymous user or no word ID, removing from localStorage only`);
-                }
-                
-                // Remove from local array
-                vocabulary.splice(index, 1);
-                
-                // Update localStorage for anonymous users
-                if (!currentUser) {
+                    
+                    // Remove from local array for anonymous users
+                    vocabulary.splice(index, 1);
+                    
+                    // Update localStorage for anonymous users
                     localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
                 }
                 
@@ -3545,15 +3548,24 @@ Please check:
         // Touch event handlers for mobile multi-word selection
         let touchStartTime = 0;
         let lastTouchTarget = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let hasMovedSignificantly = false;
+        let selectionIntentDetected = false;
         
         function handleTouchStart(word, index, event) {
-            event.preventDefault(); // Prevent scrolling
+            // Don't prevent default initially - allow natural scrolling
             touchStartTime = Date.now();
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
             lastTouchTarget = event.target;
+            hasMovedSignificantly = false;
+            selectionIntentDetected = false;
             
             // Check if this word is already selected/highlighted
             if (event.target.classList.contains('selected') || event.target.classList.contains('active')) {
                 // Toggle off - unhighlight and hide popup
+                event.preventDefault(); // Prevent scroll only for this action
                 event.target.classList.remove('active', 'selected');
                 selectedWords = [];
                 isSelecting = false;
@@ -3561,49 +3573,76 @@ Please check:
                 return;
             }
             
-            // Clear previous selections
-            document.querySelectorAll('.urdu-word').forEach(w => {
-                w.classList.remove('active');
-                w.classList.remove('selected');
-            });
-            
-            // Start new selection
-            selectedWords = [index];
-            event.target.classList.add('selected');
-            isSelecting = true;
+            // Store initial selection data but don't start selecting yet
             selectionStart = index;
         }
         
         function handleTouchMove(index, event) {
-            if (!isSelecting) return;
-            
-            event.preventDefault(); // Prevent scrolling
-            
-            // Find the element under the touch point
             const touch = event.touches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const deltaX = Math.abs(touch.clientX - touchStartX);
+            const deltaY = Math.abs(touch.clientY - touchStartY);
+            const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             
-            if (elementBelow && elementBelow.classList.contains('urdu-word')) {
-                const currentIndex = parseInt(elementBelow.getAttribute('data-word-index'));
+            // Check if user has moved significantly (more than 15px)
+            if (totalMovement > 15) {
+                hasMovedSignificantly = true;
                 
-                // Clear current selection
-                document.querySelectorAll('.urdu-word').forEach(w => w.classList.remove('selected'));
-                
-                // Select range from start to current
-                const start = Math.min(selectionStart, currentIndex);
-                const end = Math.max(selectionStart, currentIndex);
-                
-                selectedWords = [];
-                const words = document.querySelectorAll('.urdu-word');
-                
-                for (let i = start; i <= end; i++) {
-                    selectedWords.push(i);
-                    words[i].classList.add('selected');
+                // If vertical movement is dominant, allow scrolling
+                if (deltaY > deltaX * 1.5) {
+                    // This is likely a scroll gesture - don't interfere
+                    isSelecting = false;
+                    return;
                 }
+            }
+            
+            // If we're already selecting, handle multi-word selection
+            if (isSelecting) {
+                event.preventDefault(); // Prevent scrolling only when actively selecting
                 
-                // Update UI to show selection count
-                if (selectedWords.length > 1) {
-                    updateSelectionUI();
+                // Find the element under the touch point
+                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                if (elementBelow && elementBelow.classList.contains('urdu-word')) {
+                    const currentIndex = parseInt(elementBelow.getAttribute('data-word-index'));
+                    
+                    // Clear current selection
+                    document.querySelectorAll('.urdu-word').forEach(w => w.classList.remove('selected'));
+                    
+                    // Select range from start to current
+                    const start = Math.min(selectionStart, currentIndex);
+                    const end = Math.max(selectionStart, currentIndex);
+                    
+                    selectedWords = [];
+                    const words = document.querySelectorAll('.urdu-word');
+                    
+                    for (let i = start; i <= end; i++) {
+                        selectedWords.push(i);
+                        words[i].classList.add('selected');
+                    }
+                    
+                    // Update UI to show selection count
+                    if (selectedWords.length > 1) {
+                        updateSelectionUI();
+                    }
+                }
+            } else if (!hasMovedSignificantly || (deltaX > deltaY && totalMovement > 30)) {
+                // Horizontal movement or small movement - could be word selection intent
+                // Only start selection if touch duration > 200ms or horizontal drag > 30px
+                const touchDuration = Date.now() - touchStartTime;
+                if (touchDuration > 200 || (deltaX > deltaY && totalMovement > 30)) {
+                    event.preventDefault(); // Now prevent scrolling
+                    selectionIntentDetected = true;
+                    
+                    // Clear previous selections
+                    document.querySelectorAll('.urdu-word').forEach(w => {
+                        w.classList.remove('active');
+                        w.classList.remove('selected');
+                    });
+                    
+                    // Start new selection
+                    selectedWords = [selectionStart];
+                    lastTouchTarget.classList.add('selected');
+                    isSelecting = true;
                 }
             }
         }
@@ -3611,11 +3650,12 @@ Please check:
         async function handleTouchEnd(event) {
             const touchDuration = Date.now() - touchStartTime;
             
+            // If we were selecting, handle translation
             if (isSelecting && selectedWords.length > 1) {
                 // Multi-word selection - translate phrase
                 translateSelectedWords();
-            } else if (isSelecting && selectedWords.length === 1 && touchDuration < 500) {
-                // Single word tap - translate immediately
+            } else if (isSelecting && selectedWords.length === 1) {
+                // Single word selection - translate immediately
                 const index = selectedWords[0];
                 const words = document.querySelectorAll('.urdu-word');
                 const word = words[index].textContent;
@@ -3635,9 +3675,39 @@ Please check:
                 } catch (error) {
                     showTranslation(cleanWord, 'Translation error', words[index]);
                 }
+            } else if (!isSelecting && !hasMovedSignificantly && touchDuration < 300) {
+                // Quick tap without movement - translate single word
+                const word = lastTouchTarget.textContent;
+                const cleanWord = word.replace(/[۔،؟!]/g, '');
+                const index = parseInt(lastTouchTarget.getAttribute('data-word-index'));
+                
+                // Clear previous selections and highlight this word
+                document.querySelectorAll('.urdu-word').forEach(w => {
+                    w.classList.remove('active', 'selected');
+                });
+                lastTouchTarget.classList.add('selected');
+                selectedWords = [index];
+                
+                try {
+                    // Check cache
+                    if (translationCache.has(cleanWord)) {
+                        showTranslation(cleanWord, translationCache.get(cleanWord), lastTouchTarget);
+                        return;
+                    }
+                    
+                    document.getElementById('translationContent').innerHTML = 'Translating...';
+                    const translation = await translateText(cleanWord);
+                    translationCache.set(cleanWord, translation);
+                    showTranslation(cleanWord, translation, lastTouchTarget);
+                } catch (error) {
+                    showTranslation(cleanWord, 'Translation error', lastTouchTarget);
+                }
             }
             
+            // Reset state
             isSelecting = false;
+            hasMovedSignificantly = false;
+            selectionIntentDetected = false;
         }
     </script>
 </body>
