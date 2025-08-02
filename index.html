@@ -367,6 +367,7 @@
             right: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-top: 1px solid #e5e7eb;
             padding: 15px 20px;
             z-index: 1000;
@@ -1582,12 +1583,16 @@
                         <img src="${currentUser.user_metadata.avatar_url || 'https://via.placeholder.com/32'}" 
                              alt="User avatar" class="user-avatar">
                         <span>${currentUser.user_metadata.full_name || currentUser.email}</span>
-                        <button class="auth-button sign-out-btn" onclick="signOut()">Sign Out</button>
+                        <button class="auth-button sign-out-btn" onclick="signOut()" 
+                                title="Sign out of your account" 
+                                aria-label="Sign out from Google account">Sign Out</button>
                     </div>
                 `
             } else {
                 authSection.innerHTML = `
-                    <button class="auth-button" onclick="signInWithGoogle()">
+                    <button class="auth-button" onclick="signInWithGoogle()" 
+                            title="Sign in with your Google account" 
+                            aria-label="Sign in with Google authentication">
                         📧 Sign in with Google
                     </button>
                 `
@@ -3712,6 +3717,6 @@ Please check:
     </script>
     
     <!-- Deployment verification timestamp -->
-    <div style="position: fixed; top: 10px; right: 10px; font-size: 14px; color: #ff0000; background: rgba(255,255,255,0.9); padding: 5px 8px; border-radius: 4px; z-index: 9999; font-family: monospace; font-weight: bold; border: 2px solid #ff0000;">v2025.01.31-18:58:15</div>
+    <div style="position: fixed; top: 10px; right: 10px; font-size: 14px; color: #ff0000; background: rgba(255,255,255,0.9); padding: 5px 8px; border-radius: 4px; z-index: 9999; font-family: monospace; font-weight: bold; border: 2px solid #ff0000;">v2025.02.01-19:22:47</div>
 </body>
 </html>
