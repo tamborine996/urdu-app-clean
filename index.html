@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learningstudio1</title>
+    <title>Urdu Learning Studio</title>
     <style>
         * {
             margin: 0;
@@ -744,7 +744,28 @@
             overflow-y: auto;
             flex: 1;
             min-height: 0;
+            max-height: calc(80vh - 180px);
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: auto;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        
+        .mobile-vocab-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .mobile-vocab-list::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 4px;
+        }
+        
+        .mobile-vocab-list::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        .mobile-vocab-list::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
         }
 
         .mobile-vocab-item {
@@ -1249,7 +1270,7 @@
                 <!-- Auth UI will be dynamically updated -->
             </div>
             <h1>اردو Learning Studio</h1>
-            <p>Click words for instant translation1</p>
+            <p>Click words for instant translation</p>
         </header>
 
         <div class="main-content">
@@ -1359,8 +1380,8 @@
                 <div class="filter-section">
                     <div class="filter-label">Story Scope</div>
                     <div class="filter-group">
-                        <button class="filter-btn active" id="storyCurrentBtn" onclick="setStoryFilter('current')">This Story</button>
-                        <button class="filter-btn" id="storyAllBtn" onclick="setStoryFilter('all')">All Stories</button>
+                        <button class="filter-btn" id="storyCurrentBtn" onclick="setStoryFilter('current')">This Story</button>
+                        <button class="filter-btn active" id="storyAllBtn" onclick="setStoryFilter('all')">All Stories</button>
                     </div>
                 </div>
                 
@@ -2666,7 +2687,7 @@
         }
 
         // State for vocabulary filtering
-        let showCurrentStoryOnly = true;
+        let showCurrentStoryOnly = false;
         let currentDifficultyFilter = 'all'; // 'all', 'easy', 'medium', 'hard'
 
         // Render mobile vocabulary list
@@ -2805,7 +2826,7 @@
 
         // Clear all filters
         function clearAllFilters() {
-            showCurrentStoryOnly = true; // Reset to default
+            showCurrentStoryOnly = false; // Reset to default (All Stories)
             currentDifficultyFilter = 'all'; // Reset to default
             renderMobileVocabulary();
             updateFilterButtonStates();
@@ -2816,7 +2837,7 @@
             const filterStatusBar = document.getElementById('filterStatusBar');
             const filterStatusText = document.getElementById('filterStatusText');
             
-            const hasFilters = !showCurrentStoryOnly || currentDifficultyFilter !== 'all';
+            const hasFilters = showCurrentStoryOnly || currentDifficultyFilter !== 'all';
             
             if (hasFilters) {
                 filterStatusBar.style.display = 'flex';
@@ -2824,8 +2845,8 @@
                 let statusParts = [];
                 
                 // Story scope filter
-                if (!showCurrentStoryOnly) {
-                    statusParts.push('All Stories');
+                if (showCurrentStoryOnly) {
+                    statusParts.push('This Story Only');
                 }
                 
                 // Difficulty filter
@@ -3717,6 +3738,6 @@ Please check:
     </script>
     
     <!-- Deployment verification timestamp -->
-    <div style="position: fixed; top: 10px; right: 10px; font-size: 14px; color: #ff0000; background: rgba(255,255,255,0.9); padding: 5px 8px; border-radius: 4px; z-index: 9999; font-family: monospace; font-weight: bold; border: 2px solid #ff0000;">v2025.02.01-19:22:47</div>
+    <div style="position: fixed; top: 10px; right: 10px; font-size: 14px; color: #ff0000; background: rgba(255,255,255,0.9); padding: 5px 8px; border-radius: 4px; z-index: 9999; font-family: monospace; font-weight: bold; border: 2px solid #ff0000;">v2025.02.01-19:35:12</div>
 </body>
 </html>
